@@ -2,7 +2,6 @@
 #define COMMANDS_HPP
 
 class Commands {
-private:
 public:
 	static void	admin();
 	static void	away();
