@@ -9,4 +9,6 @@
 
 *inet_addr* и *inet_ntoa* - https://www.opennet.ru/man.shtml?topic=inet_addr&category=3&russian=0;
 
+*poll* - https://www.opennet.ru/man.shtml?topic=poll&category=2&russian=0;
+
 
