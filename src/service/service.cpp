@@ -1,6 +1,6 @@
 #include "service.hpp"
 
-void Service::sendErrorResponse(unsigned int code, const User &user, std::string arg1, std::string arg2="") {
+void Service::sendErrorResponse(unsigned int code, const User &user, std::string arg1="", std::string arg2="") {
 	std::string res = ":server_name " + std::to_string(code) + " " + user.getNickName();
 	// std::string res = ":" + config["server.name"] + " " + std::to_string(code) + " " + user.getNickName();
 	switch (code) {
@@ -53,7 +53,7 @@ void Service::sendErrorResponse(unsigned int code, const User &user, std::string
 	// Server::writing(user.getSocketFd(), res);
 }
 
-void sendResponse(unsigned int code, const User &user, std::string arg1, std::string arg2="", std::string arg3="", \
+void sendResponse(unsigned int code, const User &user, std::string arg1="", std::string arg2="", std::string arg3="", \
 									std::string arg4="", std::string arg5="", std::string arg6="", std::string arg7="") {
 	// std::string res = ":" + config["server.name"] + " " + std::to_string(code) + " " + user.getNickName() + " ";
 	std::string res = ":server_name " + std::to_string(code) + " " + user.getNickName() + " ";
@@ -81,7 +81,7 @@ void sendResponse(unsigned int code, const User &user, std::string arg1, std::st
 		case 342: res += arg1 + " :Summoning user to IRC\n"; break;
 		case 351: res += arg1 + "." + arg2 + " " + arg3 + " :" + arg4 + "\n"; break;
 		case 352: res += arg1 + " " + arg2 + " " + arg3 + " " + arg4 + " ";
-				  res += arg5 + " H :" + arg6 + " " + arg7 + "\n"; break;
+				  res += arg5 + " H :" + arg6 + " " + arg7 + "\n"; break;///////////////////////////////////H
 		case 315: res += arg1 + " :End of /WHO list\n"; break;
 		case 353: res += arg1 + " :" + arg2 + "\n"; break;
 		case 366: res += arg1 + " :End of /NAMES list\n"; break;
@@ -108,11 +108,11 @@ void sendResponse(unsigned int code, const User &user, std::string arg1, std::st
 		case 204: res += "Oper " + arg1 + " " + arg2 + "\n"; break;
 		case 205: res += "User " + arg1 + " " + arg2 + "\n"; break;
 		case 206: res += "Serv " + arg1 + " " + arg2 + "S " + arg3 + "C ";
-				  res += arg4 + " " + arg5 + "@H\n"; break;
+				  res += arg4 + " " + arg5 + "@H\n"; break;//////////////////////////////////H
 		case 208: res += arg1 + " 0 " + arg2 + "\n"; break;
 		case 261: res += "File " + arg1 + " " + arg2 + "\n"; break;
 		case 211: res += arg1 + " " + arg2 + " " + arg3 + " " + arg4 + " ";
-				  res += arg5 + " H " + arg6 + "\n"; break;
+				  res += arg5 + " H " + arg6 + "\n"; break;///////////////////////////////////H
 		case 212: res += arg1 + " " + arg2 + "\n"; break;
 		case 213: res += "C " + arg1 + " * " + arg2 + " " + arg3 + " " + arg4 + "\n"; break;
 		case 214: res += "N " + arg1 + " * " + arg2 + " " + arg3 + " " + arg4 + "\n"; break;
