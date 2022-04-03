@@ -1,5 +1,19 @@
 #include "service.hpp"
 
+uint64_t Service::timer() {//Используется?
+	static struct timeval time;
+	gettimeofday(&time, NULL);
+	return ((time.tv_sec * (uint64_t)1000) + (time.tv_usec / (uint64_t)1000));
+}
+
+std::string Service::getDate() {
+	time_t timetoday;
+	time(&timetoday);
+	// string result = asctime(localtime(&timetoday));
+	// return result.substr(0, result.length() - 1);
+	return asctime(localtime(&timetoday)); // Может быть стоит выделить память
+}
+
 void Service::sendErrorResponse(unsigned int code, const User &user, std::string arg1="", std::string arg2="") {
 	std::string res = ":server_name " + std::to_string(code) + " " + user.getNickName();
 	// std::string res = ":" + config["server.name"] + " " + std::to_string(code) + " " + user.getNickName();
