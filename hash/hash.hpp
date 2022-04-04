@@ -18,7 +18,7 @@ namespace   hash {
     0x748F82EE, 0x78A5636F, 0x84C87814, 0x8CC70208, 0x90BEFFFA, 0xA4506CEB, 0xBEF9A3F7, 0xC67178F2
     };
 
-    std::string to_sha256 (std::string &strIn);
+    std::string to_sha256 (const std::string &strIn);
 }
 
 #endif

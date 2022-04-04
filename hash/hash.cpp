@@ -6,7 +6,7 @@ __uint32_t		rightRotate(__uint32_t n, char m) {
 	return (n >> m) | (n << (32 - m));
 }
 
-std::string to_sha256(std::string &strIn) {
+std::string to_sha256(const std::string &strIn) {
 
     std::basic_string<unsigned char> str;
     std::stringstream	ss;
