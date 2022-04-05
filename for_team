@@ -1,0 +1,4 @@
+server:
+    public: bool checkPass(std::string password);
+    public: ... kickUser(User &user);
+    public: vector<string> users;

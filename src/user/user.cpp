@@ -34,6 +34,7 @@ bool User::operator!=(const User &op) { return _id != op.getId(); }
 ////////////////////////////////
 int			User::getId() const { return _id; }
 int			User::getSocketFd() const { return _socketFd; }
+std::string	User::getServerName() const { return _serverName; }
 std::string	User::getNickName() const { return _nickName; }
 std::string	User::getUserName() const { return _userName; }
 std::string	User::getRealName() const { return _realName; }
@@ -45,12 +46,13 @@ bool 		User::isRegistered() const { return _registered; }
 ////////////////////////////////
 //----------Setters-----------//
 ////////////////////////////////
-int			User::setId(int id) { _id = id; }
-std::string	User::setNickName(std::string nickName) { _nickName = nickName; }
-std::string	User::setUserName(std::string userName) { _userName = userName; }
-std::string	User::setRealName(std::string realName) { _realName = realName; }
-std::string	User::setHost(std::string host) { _host = host; }
-bool		User::setAdmin(bool b) { _admin = b; }
-bool		User::setValidPass(bool b) { _validPass = b; }
-bool		User::setRegistered(bool b) { _registered = b; }
-// int		User::setSocketFd(int fd) { _socketFd = fd; }
+void 		User::setId(int id) { _id = id; }
+void 		User::setServerName(std::string serverName) { _serverName = serverName; }
+void 		User::setNickName(std::string nickName) { _nickName = nickName; }
+void 		User::setUserName(std::string userName) { _userName = userName; }
+void 		User::setRealName(std::string realName) { _realName = realName; }
+void 		User::setHost(std::string host) { _host = host; }
+void		User::setAdmin(bool b) { _admin = b; }
+void		User::setValidPass(bool b) { _validPass = b; }
+void		User::setRegistered(bool b) { _registered = b; }
+// void		User::setSocketFd(int fd) { _socketFd = fd; }

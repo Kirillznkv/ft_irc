@@ -22,9 +22,9 @@ private:
 	static void	kill(User &user, std::vector<std::string> &args);
 	static void	list(User &user, std::vector<std::string> &args);
 	static void	mode(User &user, std::vector<std::string> &args);
-	static void	motd(User &user, std::vector<std::string> &args);//args
+	static void	motd(User &user);
 	static void	names(User &user, std::vector<std::string> &args);
-	static int	nick(User &user, std::vector<std::string> &args);
+	static void	nick(User &user, std::vector<std::string> &args);
 	static void	notice(User &user, std::vector<std::string> &args);
 	static void	oper(User &user, std::vector<std::string> &args);
 	static void	part(User &user, std::vector<std::string> &args);

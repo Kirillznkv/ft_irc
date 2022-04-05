@@ -12,7 +12,7 @@ private:
 	std::string _realName;
 	std::string _host;
 	// std::string _realHost;
-	// std::string _serverName;
+	std::string _serverName;
 	bool    	_validPass;
 	bool    	_registered;
 	bool    	_admin;
@@ -33,6 +33,7 @@ public:
 	////////////////////////////////
 	int			getId() const;
 	int			getSocketFd() const;
+	std::string	getServerName() const;
 	std::string	getNickName() const;
 	std::string	getUserName() const;
 	std::string	getRealName() const;
@@ -43,15 +44,16 @@ public:
 	////////////////////////////////
 	//----------Setters-----------//
 	////////////////////////////////
-	int			setId(int id);
-	std::string	setNickName(std::string nickName);
-	std::string	setUserName(std::string userName);
-	std::string	setRealName(std::string realName);
-	std::string	setHost(std::string host);
-	bool		setAdmin(bool b);
-	bool		setValidPass(bool b);
-	bool		setRegistered(bool b);
-	// int		setSocketFd(int fd);
+	void		setId(int id);
+	void 		setServerName(std::string serverName);
+	void 		setNickName(std::string nickName);
+	void		setUserName(std::string userName);
+	void 		setRealName(std::string realName);
+	void 		setHost(std::string host);
+	void		setAdmin(bool b);
+	void		setValidPass(bool b);
+	void		setRegistered(bool b);
+	// void		setSocketFd(int fd);
 };
 
 #endif

@@ -20,6 +20,15 @@ std::string ParseRequest::getPrefix(std::vector<std::string> &args) {
 		prefix = args.front();
 		args.erase(args.begin());
 	}
+	for (std::vector<std::string>::iterator it = args.begin();  it != args.end(); ++it) {
+		if ((*it).front() == ':') {
+			(*it).erase(0, 1);
+			std::vector<std::string>::iterator new_end = it + 1;
+			for (std::vector<std::string>::iterator it2 = new_end;  it2 != args.end(); ++it2)
+				*it = *it + " " + *it2;
+			args.erase(new_end, args.end());
+		}
+	}
 	return prefix;
 }
 

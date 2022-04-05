@@ -1,9 +1,58 @@
 #include "commands.hpp"
 
-unsigned int Commands::chooseCommand(User &user, std::vector<std::string> &args) {
+void Commands::pass(User &user, std::vector<std::string> &args) {
+	if (user.isRegistered()) {
+		Service::sendErrorResponse(462, user);
+		return ;
+	}
+	if (args.size() == 1) {
+		Service::sendErrorResponse(461, user, args[0]);
+		return ;
+	}
+//	Убрать комментарий как Даша добавит метод
+//	user.setValidPass(Server::isTruePass(args[1]));
+	user.setValidPass(true); // Удалить когда раскоментится предыдущее
+}
 
+void Commands::nick(User &user, std::vector<std::string> &args) {
+	if (args.size() == 1) {
+		Service::sendErrorResponse(461, user, args[0]);
+		return ;
+	}
+//	Убрать комментарий как Даша добавит метод
+//	for (std::vector<User>::iterator it = Server::users.begin(); it != Server::users.end(); ++it) {
+//		if (it->getNickName() == args[1]) {
+//			Service::sendErrorResponse(433, user, args[1]);
+//			return ;
+//		}
+//	}
+	user.setNickName(args[1]);
+}
+
+int Commands::user(User &user, std::vector<std::string> &args) {
+	if (args.size() < 4) {
+		Service::sendErrorResponse(461, user, args[0]);
+		return 0;
+	}
+	if (user.getNickName() == "" || user.isValidPass() == false) {
+//		Раскоментить когда Даша напишет метод
+//		Server::kickUser(user);
+		return 0;
+	}
+	user.setUserName(args[1]);
+	user.setHost(args[2]);
+	user.setServerName(args[3]);
+	user.setRealName(args[4]);
+	if (user.isRegistered() == true)
+		return 0;
+	user.setRegistered(true);
+	Commands::motd(user);
+	return 7;
+}
+
+unsigned int Commands::chooseCommand(User &user, std::vector<std::string> &args) {
 	if (args[0] == "PASS") { Commands:pass(user, args); }
-	else if (args[0] == "NICK") { return Commands::nick(user, args); }
+	else if (args[0] == "NICK") { Commands::nick(user, args); }
 	else if (args[0] == "USER") { return Commands::user(user, args); }
 	else if (args[0] == "QUIT") { Commands::quit(user); }
 	else if (!user.isRegistered()) { Service::sendErrorResponse(451, user); }
@@ -19,7 +68,7 @@ unsigned int Commands::chooseCommand(User &user, std::vector<std::string> &args)
 	else if (args[0] == "KILL") { Commands::kill(user, args); }
 	else if (args[0] == "LIST") { Commands::list(user, args); }
 	else if (args[0] == "MODE") { Commands::mode(user, args); }
-	else if (args[0] == "MOTD") { Commands::motd(user, args); }
+	else if (args[0] == "MOTD") { Commands::motd(user); }
 	else if (args[0] == "NAMES") {Commands::names(user, args); }
 	else if (args[0] == "NOTICE") { Commands::notice(user, args); }
 	else if (args[0] == "OPER") { Commands::oper(user, args); }
