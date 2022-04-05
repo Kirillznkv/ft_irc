@@ -1,36 +1,43 @@
 #ifndef COMMANDS_HPP
 #define COMMANDS_HPP
 
+# include <vector>
+# include <string>
+# include <sstream>
+# include "../user/user.hpp"
+# include "parseRequest.hpp"
+# include "service.hpp"
+
 class Commands {
-public:
-	static void	admin();
-	static void	away();
-	static void	die();////////////////////////
-	static void	error();//////////////////////
-	static void	info();
-	static void	invite();
-	static void	ison();
-	static void	join();
-	static void	kick();
-	static void	kill();
-	static void	list();
-	static void	mode();
-	static void	motd();
-	static void	names();
-	static int	nick();
-	static void	notice();
-	static void	oper();
-	static void	part();
-	static void	pass();
-	static int	ping();
-	static int	pong();
-	static void	privMsg();
-	static void	quit();
-	static void	rehash();
-	static int	restart();
-    static bool	stats();////////////////////////
-	static void	time();
-	static void	topic();
+private:
+	static void	admin(User &user, std::vector<std::string> &args);
+	static void	away(User &user, std::vector<std::string> &args);
+	static void	die(User &user, std::vector<std::string> &args);////////////////////////
+	static void	error(User &user, std::vector<std::string> &args);//////////////////////
+	static void	info(User &user, std::vector<std::string> &args);
+	static void	invite(User &user, std::vector<std::string> &args);
+	static void	ison(User &user, std::vector<std::string> &args);
+	static void	join(User &user, std::vector<std::string> &args);
+	static void	kick(User &user, std::vector<std::string> &args);
+	static void	kill(User &user, std::vector<std::string> &args);
+	static void	list(User &user, std::vector<std::string> &args);
+	static void	mode(User &user, std::vector<std::string> &args);
+	static void	motd(User &user, std::vector<std::string> &args);//args
+	static void	names(User &user, std::vector<std::string> &args);
+	static int	nick(User &user, std::vector<std::string> &args);
+	static void	notice(User &user, std::vector<std::string> &args);
+	static void	oper(User &user, std::vector<std::string> &args);
+	static void	part(User &user, std::vector<std::string> &args);
+	static void	pass(User &user, std::vector<std::string> &args);
+	static int	ping(User &user, std::vector<std::string> &args);
+	static int	pong(User &user, std::vector<std::string> &args);
+	static void	privMsg(User &user, std::vector<std::string> &args);
+	static void	quit(User &user);
+	static void	rehash(User &user);
+	static int	restart(User &user);
+    static bool	stats(User &user, std::vector<std::string> &args);////////////////////////
+	static void	time(User &user, std::vector<std::string> &args);
+	static void	topic(User &user, std::vector<std::string> &args);
 // static bool	checkModeParams();
 // static void	setChnlMode();
 // static void	setUserMode();
@@ -49,13 +56,16 @@ public:
 // static void	setUserModeNoticed();
 // static void	setUserModeWallops();
 // static void	setUserModeOperator();
-	static int	user();
-	static int	users();///////////////////////////
-	static void	version();
-	static void	wallops();
-	static void	who();
-	static void	whois();
-	static void	whoWas();
+	static int	user(User &user, std::vector<std::string> &args);
+	static void	version(User &user, std::vector<std::string> &args);
+	static void	wallops(User &user, std::vector<std::string> &args);
+	static void	who(User &user, std::vector<std::string> &args);
+	static void	whois(User &user, std::vector<std::string> &args);
+	static void	whoWas(User &user, std::vector<std::string> &args);
+
+	static unsigned int 			chooseCommand(User &user, std::vector<std::string> &args);
+public:
+	static unsigned int				process(User &user, std::string req);
 };
 
 #endif
