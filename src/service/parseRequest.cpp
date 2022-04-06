@@ -1,4 +1,4 @@
-#include "parseRequest.hpp"
+#include "ParseRequest.hpp"
 
 bool ParseRequest::emptyRequest(std::string req) { return req == "\n"; }
 

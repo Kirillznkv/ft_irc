@@ -5,6 +5,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include "../User/User.hpp"
+#include <vector>
 
 class Server
 {
@@ -21,6 +22,11 @@ public:
 
     void    createConnection();
 
+
+// Kirills comments
+	bool isTruePass(std::string pass) const;
+	void kickUser(User &user) const;
+	std::vector<User> _users;
 };
 
 #endif

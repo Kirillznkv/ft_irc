@@ -1,4 +1,7 @@
-#include "commands.hpp"
+#include "Commands.hpp"
+
+Commands::Commands(const Server &server) : _server(server) {}
+Commands::~Commands() {}
 
 void Commands::pass(User &user, std::vector<std::string> &args) {
 	if (user.isRegistered()) {
@@ -9,9 +12,7 @@ void Commands::pass(User &user, std::vector<std::string> &args) {
 		Service::sendErrorResponse(461, user, args[0]);
 		return ;
 	}
-//	Убрать комментарий как Даша добавит метод
-//	user.setValidPass(Server::isTruePass(args[1]));
-	user.setValidPass(true); // Удалить когда раскоментится предыдущее
+	user.setValidPass(_server.isTruePass(args[1]));
 }
 
 void Commands::nick(User &user, std::vector<std::string> &args) {
@@ -19,13 +20,12 @@ void Commands::nick(User &user, std::vector<std::string> &args) {
 		Service::sendErrorResponse(461, user, args[0]);
 		return ;
 	}
-//	Убрать комментарий как Даша добавит метод
-//	for (std::vector<User>::iterator it = Server::users.begin(); it != Server::users.end(); ++it) {
-//		if (it->getNickName() == args[1]) {
-//			Service::sendErrorResponse(433, user, args[1]);
-//			return ;
-//		}
-//	}
+	for (std::vector<User>::const_iterator it = _server._users.begin(); it != _server._users.end(); ++it) {
+		if (it->getNickName() == args[1]) {
+			Service::sendErrorResponse(433, user, args[1]);
+			return ;
+		}
+	}
 	user.setNickName(args[1]);
 }
 
@@ -35,8 +35,7 @@ int Commands::user(User &user, std::vector<std::string> &args) {
 		return 0;
 	}
 	if (user.getNickName() == "" || user.isValidPass() == false) {
-//		Раскоментить когда Даша напишет метод
-//		Server::kickUser(user);
+		_server.kickUser(user);
 		return 0;
 	}
 	user.setUserName(args[1]);
