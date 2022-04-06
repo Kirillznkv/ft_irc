@@ -11,4 +11,6 @@
 
 *poll* - https://www.opennet.ru/man.shtml?topic=poll&category=2&russian=0;
 
+*signal* - https://unetway.com/tutorial/c-obrabotka-signalov;
+
 
