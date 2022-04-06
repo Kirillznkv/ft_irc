@@ -19,6 +19,8 @@ void Config::initMap() {
 }
 
 void Config::checkInit() {
+	if (_map.empty())
+		return ;
 	bool ok = true;
 	std::string need[] = {
 			"name", "version", "debugLevel",
