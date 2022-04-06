@@ -35,7 +35,7 @@ int Commands::user(User &user, std::vector<std::string> &args) {
 		return 0;
 	}
 	if (user.getNickName() == "" || user.isValidPass() == false) {
-		_server.kickUser(user);
+		_server.killUser(user);
 		return 0;
 	}
 	user.setUserName(args[1]);
@@ -46,7 +46,33 @@ int Commands::user(User &user, std::vector<std::string> &args) {
 		return 0;
 	user.setRegistered(true);
 	Commands::motd(user);
-	return 7;
+	return NEW_REGISTRATION_CODE;
+}
+
+void Commands::quit(User &user) {
+	_server.killUser(user);
+}
+
+void Commands::time(User &user, std::vector<std::string> &args) {
+//	if (args.size() == 1 || args[1] == config["server.name"])
+	if (args.size() == 1)
+//		Service::sendResponse(391, user, config["server.name"], Service::getDate());
+		Service::sendResponse(391, user, "server_name", Service::getDate());
+	else
+		Service::sendErrorResponse(402, user, args[1]);
+}
+
+void Commands::motd(User &user) {
+	std::ifstream infile("src/motd");
+	if (infile) {
+		//	Service::sendResponse(375, user, config["server.name"]);
+		Service::sendResponse(375, user, "server_name");
+		std::string line;
+		while (std::getline(infile, line))
+			Service::sendResponse(372, user, line);
+		Service::sendResponse(376, user);
+	} else
+		Service::sendErrorResponse(422, user);
 }
 
 unsigned int Commands::chooseCommand(User &user, std::vector<std::string> &args) {

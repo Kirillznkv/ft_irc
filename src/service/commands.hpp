@@ -4,10 +4,13 @@
 # include <vector>
 # include <string>
 # include <sstream>
+# include <fstream>
 # include "../Server/Server.hpp"
 # include "../User/User.hpp"
 # include "ParseRequest.hpp"
 # include "Service.hpp"
+
+# define NEW_REGISTRATION_CODE 1
 
 class Commands {
 private:
@@ -27,21 +30,21 @@ private:
 	void	kill(User &user, std::vector<std::string> &args);
 	void	list(User &user, std::vector<std::string> &args);
 	void	mode(User &user, std::vector<std::string> &args);
-	void	motd(User &user);
+	void	motd(User &user);// Done
 	void	names(User &user, std::vector<std::string> &args);
-	void	nick(User &user, std::vector<std::string> &args);
+	void	nick(User &user, std::vector<std::string> &args);// Done
 	void	notice(User &user, std::vector<std::string> &args);
 	void	oper(User &user, std::vector<std::string> &args);
 	void	part(User &user, std::vector<std::string> &args);
-	void	pass(User &user, std::vector<std::string> &args);
+	void	pass(User &user, std::vector<std::string> &args);// Done
 	int		ping(User &user, std::vector<std::string> &args);
 	int		pong(User &user, std::vector<std::string> &args);
 	void	privMsg(User &user, std::vector<std::string> &args);
-	void	quit(User &user);
+	void	quit(User &user);// Done
 	void	rehash(User &user);
 	int		restart(User &user);
 	bool	stats(User &user, std::vector<std::string> &args);////////////////////////
-	void	time(User &user, std::vector<std::string> &args);
+	void	time(User &user, std::vector<std::string> &args);// Done
 	void	topic(User &user, std::vector<std::string> &args);
 // bool	checkModeParams();
 // void	setChnlMode();
@@ -61,7 +64,7 @@ private:
 // void	setUserModeNoticed();
 // void	setUserModeWallops();
 // void	setUserModeOperator();
-	int		user(User &user, std::vector<std::string> &args);
+	int		user(User &user, std::vector<std::string> &args);// Done
 	void	version(User &user, std::vector<std::string> &args);
 	void	wallops(User &user, std::vector<std::string> &args);
 	void	who(User &user, std::vector<std::string> &args);

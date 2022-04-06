@@ -1,6 +1,6 @@
 #include "Service.hpp"
 
-uint64_t Service::timer() {//Используется?
+uint64_t Service::timer() {
 	static struct timeval time;
 	gettimeofday(&time, NULL);
 	return ((time.tv_sec * (uint64_t)1000) + (time.tv_usec / (uint64_t)1000));
@@ -12,6 +12,15 @@ std::string Service::getDate() {
 	// string result = asctime(localtime(&timetoday));
 	// return result.substr(0, result.length() - 1);
 	return asctime(localtime(&timetoday)); // Может быть стоит выделить память
+}
+
+std::vector<std::string> Service::split(const std::string& str, char delimeter) {
+	std::vector<std::string> args;
+	std::istringstream f(str);
+	std::string s;
+	while (getline(f, s, delimeter))
+		args.push_back(s);
+	return args;
 }
 
 void Service::sendErrorResponse(unsigned int code, const User &user, std::string arg1="", std::string arg2="") {

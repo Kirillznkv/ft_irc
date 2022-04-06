@@ -5,6 +5,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include "../User/User.hpp"
+#include "../Service/Service.hpp"
 #include <vector>
 
 class Server
@@ -25,8 +26,12 @@ public:
 
 // Kirills comments
 	bool isTruePass(std::string pass) const;
-	void kickUser(User &user) const;
-	std::vector<User> _users;
+	void killUser(User &user) const;
+
+	std::vector<User>	_users;
+private:
+	friend class Service;
+	Service				_service;
 };
 
 #endif
