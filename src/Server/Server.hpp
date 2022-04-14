@@ -21,6 +21,8 @@ public:
 
     void    createConnection();
 
+    void    error(int err, std::string clarification);
+
 };
 
 #endif
