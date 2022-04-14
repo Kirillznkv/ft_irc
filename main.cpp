@@ -3,7 +3,7 @@
 
 
 int     main(int argc, char **argv) {
-    if (argc == 3) {
+    if (argc == 3) { // We will receive 4 args?
         Server  server()
     }
     else {
