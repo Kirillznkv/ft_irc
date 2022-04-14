@@ -4,7 +4,8 @@
 #include <iostream>
 #include <sys/types.h>
 #include <sys/socket.h>
-#include "../User/User.hpp"
+#include "../user/user.hpp"
+#include "../Channel/Channel.hpp" //this is right???
 
 class Server
 {
@@ -17,7 +18,8 @@ public:
     Server();
     ~Server();
 
-    std::vector<User>    user;
+    std::vector<User>       users;
+    std::vector<Channel>    channels;
 
     void    createConnection();
 
