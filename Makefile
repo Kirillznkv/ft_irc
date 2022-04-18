@@ -2,7 +2,13 @@ NAME				=	ircserv
 
 DIRECTORY_SOURCE	=	src
 
-FILES_SOURCE		=	src/Config/*.cpp src/Server/*.cpp src/Service/*.cpp src/User/*.cpp main.cpp
+FILES_SOURCE		=	src/Config/Config.cpp \
+						src/Server/Server.cpp \
+						src/Service/Service.cpp \
+						src/Service/Commands.cpp \
+						src/Service/ParseRequest.cpp \
+						src/User/User.cpp \
+						main.cpp
 
 O_FILE = $(FILES_SOURCE:.cpp=.o)
 
@@ -29,7 +35,7 @@ clean:
 
 fclean: clean
 	@printf "Remove\t$(NAME)\n"
-	rm -f $(NAME)
+	rm -f $(O_FILE)
 
 re: fclean all
 

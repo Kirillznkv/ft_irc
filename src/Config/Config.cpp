@@ -29,7 +29,7 @@ void Config::checkInit() {
 			"maxConnections", "maxChannels",
 			"requestTimeout", "responseTimeout"
 	};
-	for (int i = 0; i < need->size(); ++i)
+	for (int i = 0; i < (int)need->size(); ++i)
 		if (_map.find(need[i]) == _map.end())
 			ok = false;
 	_ok = ok;

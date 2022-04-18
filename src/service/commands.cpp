@@ -73,7 +73,7 @@ void Server::motd(User &user) {
 }
 
 unsigned int Server::chooseCommand(User &user, std::vector<std::string> &args) {
-	if (args[0] == "PASS") { Commands:pass(user, args); }
+	if (args[0] == "PASS") { Server::pass(user, args); }
 	else if (args[0] == "NICK") { Server::nick(user, args); }
 	else if (args[0] == "USER") { return Server::user(user, args); }
 	else if (args[0] == "QUIT") { Server::quit(user); }

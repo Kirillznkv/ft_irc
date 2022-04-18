@@ -3,6 +3,8 @@
 
 
 int     main(int argc, char **argv) {
+	if (argv)
+		;
     if (argc == 3) {
 		Server serv(6667, "pass");
 		serv.start();
