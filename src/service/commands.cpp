@@ -1,6 +1,6 @@
 #include "../Server/Server.hpp"
 
-void Server::pass(User &user, std::vector<std::string> &args) {
+void Server::passCmd(User &user, std::vector<std::string> &args) {
 	if (user.isRegistered()) {
 		Server::sendErrorResponse(462, user);
 		return ;
@@ -12,7 +12,7 @@ void Server::pass(User &user, std::vector<std::string> &args) {
 	user.setValidPass(args[1] == _pass);
 }
 
-void Server::nick(User &user, std::vector<std::string> &args) {
+void Server::nickCmd(User &user, std::vector<std::string> &args) {
 	if (args.size() == 1) {
 		Server::sendErrorResponse(461, user, args[0]);
 		return ;
@@ -26,7 +26,7 @@ void Server::nick(User &user, std::vector<std::string> &args) {
 	user.setNickName(args[1]);
 }
 
-int Server::user(User &user, std::vector<std::string> &args) {
+int Server::userCmd(User &user, std::vector<std::string> &args) {
 	if (args.size() < 4) {
 		Server::sendErrorResponse(461, user, args[0]);
 		return 0;
@@ -42,11 +42,11 @@ int Server::user(User &user, std::vector<std::string> &args) {
 	if (user.isRegistered() == true)
 		return 0;
 	user.setRegistered(true);
-	Server::motd(user);
+	Server::motdCmd(user);
 	return 7;
 }
 
-void Server::quit(User &user) {
+void Server::quitCmd(User &user) {
 	killUser(user);
 }
 
@@ -59,7 +59,7 @@ void Server::timeCmd(User &user, std::vector<std::string> &args) {
 		Server::sendErrorResponse(402, user, args[1]);
 }
 
-void Server::motd(User &user) {
+void Server::motdCmd(User &user) {
 	std::ifstream infile("data/motd");
 	if (infile) {
 		//	Server::sendResponse(375, user, config["server.name"]);
@@ -73,41 +73,41 @@ void Server::motd(User &user) {
 }
 
 unsigned int Server::chooseCommand(User &user, std::vector<std::string> &args) {
-	if (args[0] == "PASS") { Server::pass(user, args); }
-	else if (args[0] == "NICK") { Server::nick(user, args); }
-	else if (args[0] == "USER") { return Server::user(user, args); }
-	else if (args[0] == "QUIT") { Server::quit(user); }
+	if (args[0] == "PASS") { Server::passCmd(user, args); }
+	else if (args[0] == "NICK") { Server::nickCmd(user, args); }
+	else if (args[0] == "USER") { return Server::userCmd(user, args); }
+	else if (args[0] == "QUIT") { Server::quitCmd(user); }
 	else if (!user.isRegistered()) { Server::sendErrorResponse(451, user); }
-	else if (args[0] == "ADMIN") { Server::admin(user, args); }
-	else if (args[0] == "AWAY") { Server::away(user, args); }
-	else if (args[0] == "DIE") { Server::die(user, args); }
-	else if (args[0] == "ERROR") { Server::error(user, args); }
-	else if (args[0] == "INFO") { Server::info(user, args); }
-	else if (args[0] == "INVITE") { Server::invite(user, args); }
-	else if (args[0] == "ISON") { Server::ison(user, args); }
-	else if (args[0] == "JOIN") { Server::join(user, args); }
-	else if (args[0] == "KICK") { Server::kick(user, args); }
-	else if (args[0] == "KILL") { Server::kill(user, args); }
-	else if (args[0] == "LIST") { Server::list(user, args); }
-	else if (args[0] == "MODE") { Server::mode(user, args); }
-	else if (args[0] == "MOTD") { Server::motd(user); }
-	else if (args[0] == "NAMES") {Server::names(user, args); }
-	else if (args[0] == "NOTICE") { Server::notice(user, args); }
-	else if (args[0] == "OPER") { Server::oper(user, args); }
-	else if (args[0] == "PART") { Server::part(user, args); }
-	else if (args[0] == "PING") { return Server::ping(user, args); }
-	else if (args[0] == "PONG") { return Server::pong(user, args); }
-	else if (args[0] == "PRIVMSG") { Server::privMsg(user, args); }
-	else if (args[0] == "REHASH") { Server::rehash(user); }
-	else if (args[0] == "RESTART") { return Server::restart(user); }
-	else if (args[0] == "STATS") { return Server::stats(user, args); }
+	else if (args[0] == "ADMIN") { Server::adminCmd(user, args); }
+	else if (args[0] == "AWAY") { Server::awayCmd(user, args); }
+	else if (args[0] == "DIE") { Server::dieCmd(user, args); }
+	else if (args[0] == "ERROR") { Server::errorCmd(user, args); }
+	else if (args[0] == "INFO") { Server::infoCmd(user, args); }
+	else if (args[0] == "INVITE") { Server::inviteCmd(user, args); }
+	else if (args[0] == "ISON") { Server::isonCmd(user, args); }
+	else if (args[0] == "JOIN") { Server::joinCmd(user, args); }
+	else if (args[0] == "KICK") { Server::kickCmd(user, args); }
+	else if (args[0] == "KILL") { Server::killCmd(user, args); }
+	else if (args[0] == "LIST") { Server::listCmd(user, args); }
+	else if (args[0] == "MODE") { Server::modeCmd(user, args); }
+	else if (args[0] == "MOTD") { Server::motdCmd(user); }
+	else if (args[0] == "NAMES") {Server::namesCmd(user, args); }
+	else if (args[0] == "NOTICE") { Server::noticeCmd(user, args); }
+	else if (args[0] == "OPER") { Server::operCmd(user, args); }
+	else if (args[0] == "PART") { Server::partCmd(user, args); }
+	else if (args[0] == "PING") { return Server::pingCmd(user, args); }
+	else if (args[0] == "PONG") { return Server::pongCmd(user, args); }
+	else if (args[0] == "PRIVMSG") { Server::privMsgCmd(user, args); }
+	else if (args[0] == "REHASH") { Server::rehashCmd(user); }
+	else if (args[0] == "RESTART") { return Server::restartCmd(user); }
+	else if (args[0] == "STATS") { return Server::statsCmd(user, args); }
 	else if (args[0] == "TIME") { Server::timeCmd(user, args); }
-	else if (args[0] == "TOPIC") { Server::topic(user, args); }
-	else if (args[0] == "VERSION") { Server::version(user, args); }
-	else if (args[0] == "WALLOPS") { Server::wallops(user, args); }
-	else if (args[0] == "WHO") { Server::who(user, args); }
-	else if (args[0] == "WHOIS") { Server::whois(user, args); }
-	else if (args[0] == "WHOWAS") { Server::whoWas(user, args); }
+	else if (args[0] == "TOPIC") { Server::topicCmd(user, args); }
+	else if (args[0] == "VERSION") { Server::versionCmd(user, args); }
+	else if (args[0] == "WALLOPS") { Server::wallopsCmd(user, args); }
+	else if (args[0] == "WHO") { Server::whoCmd(user, args); }
+	else if (args[0] == "WHOIS") { Server::whoisCmd(user, args); }
+	else if (args[0] == "WHOWAS") { Server::whoWasCmd(user, args); }
 	else Server::sendErrorResponse(421, user, args[0]);
 	return 0;
 }
@@ -118,3 +118,32 @@ unsigned int Server::process(User &user, std::string req) {
 	std::vector<std::string> requestArgs = ParseRequest::parseRequest(req);
 	return Server::chooseCommand(user, requestArgs);
 }
+
+void	Server::adminCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
+void	Server::awayCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
+void	Server::dieCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }////////////////////////
+void	Server::errorCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }//////////////////////
+void	Server::infoCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
+void	Server::inviteCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
+void	Server::isonCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
+void	Server::joinCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
+void	Server::kickCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
+void	Server::killCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
+void	Server::listCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
+void	Server::modeCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
+void	Server::namesCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
+void	Server::noticeCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
+void	Server::operCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
+void	Server::partCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
+int		Server::pingCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; return 0;}
+int		Server::pongCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; return 0;}
+void	Server::privMsgCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
+void	Server::rehashCmd(User &user) { user.getId(); }
+int		Server::restartCmd(User &user) { user.getId(); return 0; }
+bool	Server::statsCmd(User &user, std::vector<std::string> &args) { user.getId(); args[1]; return false; }////////////////////////
+void	Server::topicCmd(User &user, std::vector<std::string> &args) { user.getId(); args[1]; }
+void	Server::versionCmd(User &user, std::vector<std::string> &args) { user.getId(); args[1]; }
+void	Server::wallopsCmd(User &user, std::vector<std::string> &args) { user.getId(); args[1]; }
+void	Server::whoCmd(User &user, std::vector<std::string> &args) { user.getId(); args[1]; }
+void	Server::whoisCmd(User &user, std::vector<std::string> &args) { user.getId(); args[1]; }
+void	Server::whoWasCmd(User &user, std::vector<std::string> &args) { user.getId(); args[1]; }

@@ -28,38 +28,38 @@ public:
     void	createConnection();
 	void	start();
 private:
-	void	killUser(User &user) const;
+	void	killUser(User &user);
 	////////////////////////////////
 	//----------Commands----------//
 	////////////////////////////////
-	void	admin(User &user, std::vector<std::string> &args);
-	void	away(User &user, std::vector<std::string> &args);
-	void	die(User &user, std::vector<std::string> &args);////////////////////////
-	void	error(User &user, std::vector<std::string> &args);//////////////////////
-	void	info(User &user, std::vector<std::string> &args);
-	void	invite(User &user, std::vector<std::string> &args);
-	void	ison(User &user, std::vector<std::string> &args);
-	void	join(User &user, std::vector<std::string> &args);
-	void	kick(User &user, std::vector<std::string> &args);
-	void	kill(User &user, std::vector<std::string> &args);
-	void	list(User &user, std::vector<std::string> &args);
-	void	mode(User &user, std::vector<std::string> &args);
-	void	motd(User &user);// Done
-	void	names(User &user, std::vector<std::string> &args);
-	void	nick(User &user, std::vector<std::string> &args);// Done
-	void	notice(User &user, std::vector<std::string> &args);
-	void	oper(User &user, std::vector<std::string> &args);
-	void	part(User &user, std::vector<std::string> &args);
-	void	pass(User &user, std::vector<std::string> &args);// Done
-	int		ping(User &user, std::vector<std::string> &args);
-	int		pong(User &user, std::vector<std::string> &args);
-	void	privMsg(User &user, std::vector<std::string> &args);
-	void	quit(User &user);// Done
-	void	rehash(User &user);
-	int		restart(User &user);
-	bool	stats(User &user, std::vector<std::string> &args);////////////////////////
+	void	adminCmd(User &user, std::vector<std::string> &args);
+	void	awayCmd(User &user, std::vector<std::string> &args);
+	void	dieCmd(User &user, std::vector<std::string> &args);////////////////////////
+	void	errorCmd(User &user, std::vector<std::string> &args);//////////////////////
+	void	infoCmd(User &user, std::vector<std::string> &args);
+	void	inviteCmd(User &user, std::vector<std::string> &args);
+	void	isonCmd(User &user, std::vector<std::string> &args);
+	void	joinCmd(User &user, std::vector<std::string> &args);
+	void	kickCmd(User &user, std::vector<std::string> &args);
+	void	killCmd(User &user, std::vector<std::string> &args);
+	void	listCmd(User &user, std::vector<std::string> &args);
+	void	modeCmd(User &user, std::vector<std::string> &args);
+	void	motdCmd(User &user);// Done
+	void	namesCmd(User &user, std::vector<std::string> &args);
+	void	nickCmd(User &user, std::vector<std::string> &args);// Done
+	void	noticeCmd(User &user, std::vector<std::string> &args);
+	void	operCmd(User &user, std::vector<std::string> &args);
+	void	partCmd(User &user, std::vector<std::string> &args);
+	void	passCmd(User &user, std::vector<std::string> &args);// Done
+	int		pingCmd(User &user, std::vector<std::string> &args);
+	int		pongCmd(User &user, std::vector<std::string> &args);
+	void	privMsgCmd(User &user, std::vector<std::string> &args);
+	void	quitCmd(User &user);// Done
+	void	rehashCmd(User &user);
+	int		restartCmd(User &user);
+	bool	statsCmd(User &user, std::vector<std::string> &args);////////////////////////
 	void	timeCmd(User &user, std::vector<std::string> &args);// Done
-	void	topic(User &user, std::vector<std::string> &args);
+	void	topicCmd(User &user, std::vector<std::string> &args);
 	// bool	checkModeParams();
 	// void	setChnlMode();
 	// void	setUserMode();
@@ -78,12 +78,12 @@ private:
 	// void	setUserModeNoticed();
 	// void	setUserModeWallops();
 	// void	setUserModeOperator();
-	int		user(User &user, std::vector<std::string> &args);// Done
-	void	version(User &user, std::vector<std::string> &args);
-	void	wallops(User &user, std::vector<std::string> &args);
-	void	who(User &user, std::vector<std::string> &args);
-	void	whois(User &user, std::vector<std::string> &args);
-	void	whoWas(User &user, std::vector<std::string> &args);
+	int		userCmd(User &user, std::vector<std::string> &args);// Done
+	void	versionCmd(User &user, std::vector<std::string> &args);
+	void	wallopsCmd(User &user, std::vector<std::string> &args);
+	void	whoCmd(User &user, std::vector<std::string> &args);
+	void	whoisCmd(User &user, std::vector<std::string> &args);
+	void	whoWasCmd(User &user, std::vector<std::string> &args);
 	unsigned int 	chooseCommand(User &user, std::vector<std::string> &args);
 	unsigned int	process(User &user, std::string req);
 	////////////////////////////////

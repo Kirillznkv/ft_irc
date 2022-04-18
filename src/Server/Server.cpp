@@ -27,3 +27,5 @@ void Server::start() {
 	code = process(user, req2);
 	code = process(user, req3);
 }
+
+void killUser(User &user) { user.getHost();}

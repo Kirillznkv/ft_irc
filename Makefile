@@ -12,8 +12,8 @@ FILES_SOURCE		=	src/Config/Config.cpp \
 
 O_FILE = $(FILES_SOURCE:.cpp=.o)
 
-COMPILE				=	clang++
-COMPILATION_FLAG	=	-Wall -Wextra -Werror -std=c++98 -pedantic-errors -g
+COMPILE				=	c++
+COMPILATION_FLAG	=	-Wall -Wextra -Werror -std=c++98
 
 all: $(NAME)
 
