@@ -1,12 +1,12 @@
-#include "Service.hpp"
+#include "../Server/Server.hpp"
 
-uint64_t Service::timer() {
+uint64_t Server::timer() {
 	static struct timeval time;
 	gettimeofday(&time, NULL);
 	return ((time.tv_sec * (uint64_t)1000) + (time.tv_usec / (uint64_t)1000));
 }
 
-std::string Service::getDate() {
+std::string Server::getDate() {
 	time_t timetoday;
 	time(&timetoday);
 	// string result = asctime(localtime(&timetoday));
@@ -14,7 +14,7 @@ std::string Service::getDate() {
 	return asctime(localtime(&timetoday)); // Может быть стоит выделить память
 }
 
-std::vector<std::string> Service::split(const std::string& str, char delimeter) {
+std::vector<std::string> Server::split(const std::string& str, char delimeter) {
 	std::vector<std::string> args;
 	std::istringstream f(str);
 	std::string s;
@@ -23,7 +23,7 @@ std::vector<std::string> Service::split(const std::string& str, char delimeter) 
 	return args;
 }
 
-void Service::sendErrorResponse(unsigned int code, const User &user, std::string arg1="", std::string arg2="") {
+void Server::sendErrorResponse(unsigned int code, const User &user, std::string arg1="", std::string arg2="") {
 	std::string res = ":server_name " + std::to_string(code) + " " + user.getNickName();
 	// std::string res = ":" + config["server.name"] + " " + std::to_string(code) + " " + user.getNickName();
 	switch (code) {

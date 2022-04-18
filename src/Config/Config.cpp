@@ -1,6 +1,6 @@
 #include "Config.hpp"
 
-Config::Config() : _fileName("src/config.conf") { initMap(); }
+Config::Config() : _fileName("src/Config/config.conf") { initMap(); }
 Config::~Config() {}
 
 void Config::initMap() {
