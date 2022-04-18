@@ -23,9 +23,10 @@ private:
 	std::vector<User>			_users;
 
 public:
-    Server();
+    Server(unsigned short int port, std::string pass);
     ~Server();
     void	createConnection();
+	void	start();
 private:
 	void	killUser(User &user) const;
 	////////////////////////////////

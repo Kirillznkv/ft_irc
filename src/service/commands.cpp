@@ -101,7 +101,7 @@ unsigned int Server::chooseCommand(User &user, std::vector<std::string> &args) {
 	else if (args[0] == "REHASH") { Server::rehash(user); }
 	else if (args[0] == "RESTART") { return Server::restart(user); }
 	else if (args[0] == "STATS") { return Server::stats(user, args); }
-	else if (args[0] == "TIME") { Server::time(user, args); }
+	else if (args[0] == "TIME") { Server::timeCmd(user, args); }
 	else if (args[0] == "TOPIC") { Server::topic(user, args); }
 	else if (args[0] == "VERSION") { Server::version(user, args); }
 	else if (args[0] == "WALLOPS") { Server::wallops(user, args); }
