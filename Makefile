@@ -30,12 +30,12 @@ $(NAME): $(O_FILE)
 
 clean:
 	@printf "\e[31m"
-	@printf "Remove\t$(DIRECTORY_OBJECT)\n"
-	rm -rf $(DIRECTORY_OBJECT)
+	@printf "Remove\n"
+	rm -rf $(O_FILE)
 
 fclean: clean
 	@printf "Remove\t$(NAME)\n"
-	rm -f $(O_FILE)
+	rm -f $(NAME)
 
 re: fclean all
 

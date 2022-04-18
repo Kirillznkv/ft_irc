@@ -76,7 +76,7 @@ void Server::sendErrorResponse(unsigned int code, const User &user, std::string 
 	// Server::writing(user.getSocketFd(), res);
 }
 
-void sendResponse(unsigned int code, const User &user, std::string arg1, std::string arg2, std::string arg3, \
+void Server::sendResponse(unsigned int code, const User &user, std::string arg1, std::string arg2, std::string arg3, \
 									std::string arg4, std::string arg5, std::string arg6, std::string arg7) {
 	// std::string res = ":" + config["server.name"] + " " + std::to_string(code) + " " + user.getNickName() + " ";
 	std::string res = ":server_name " + std::to_string(code) + " " + user.getNickName() + " ";

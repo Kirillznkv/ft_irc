@@ -28,4 +28,4 @@ void Server::start() {
 	code = process(user, req3);
 }
 
-void killUser(User &user) { user.getHost();}
+void Server::killUser(User &user) { user.getHost();}
