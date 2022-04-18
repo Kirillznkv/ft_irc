@@ -10,8 +10,8 @@
 class Server
 {
 private:
-    int                         fd;
-    unsigned short int          port;
+    int                         sockfd;
+    int                         port;
     unsigned long               ipAddr;
 
 public:
@@ -22,6 +22,8 @@ public:
     std::vector<Channel>    channels;
 
     void    createConnection();
+
+    void    error(int err, std::string clarification);
 
 };
 

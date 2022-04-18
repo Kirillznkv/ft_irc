@@ -1,8 +1,9 @@
-#include "Server.hpp"
+#include <iostream>
+#include "/src/Server/Server.hpp"
 
 
 int     main(int argc, char **argv) {
-    if (argc == 3) {
+    if (argc == 3) { // We will receive 4 args?
         Server  server();
         server.createConnection();
     }
