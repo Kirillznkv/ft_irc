@@ -28,7 +28,7 @@ public:
     void	createConnection();
 	void	start();
 private:
-	void	killUser(User &user);
+	void		killUser(User &user);
 	////////////////////////////////
 	//----------Commands----------//
 	////////////////////////////////

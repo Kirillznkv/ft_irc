@@ -26,8 +26,8 @@ User &User::operator=(const User &op) {
 	}
 	return *this;
 }
-bool User::operator==(const User &op) { return _id == op.getId(); }
-bool User::operator!=(const User &op) { return _id != op.getId(); }
+bool User::operator==(const User &op) const { return _id == op.getId(); }
+bool User::operator!=(const User &op) const { return _id != op.getId(); }
 
 ////////////////////////////////
 //----------Getters-----------//
@@ -39,6 +39,7 @@ std::string	User::getNickName() const { return _nickName; }
 std::string	User::getUserName() const { return _userName; }
 std::string	User::getRealName() const { return _realName; }
 std::string	User::getHost() const { return _host; }
+std::string	User::getRealHost() const { return _realHost; }
 bool 		User::isAdmin() const { return _admin; }
 bool 		User::isValidPass() const { return _validPass; }
 bool 		User::isRegistered() const { return _registered; }
@@ -52,6 +53,7 @@ void 		User::setNickName(std::string nickName) { _nickName = nickName; }
 void 		User::setUserName(std::string userName) { _userName = userName; }
 void 		User::setRealName(std::string realName) { _realName = realName; }
 void 		User::setHost(std::string host) { _host = host; }
+void 		User::setRealHost(std::string realHost) { _realHost = realHost; }
 void		User::setAdmin(bool b) { _admin = b; }
 void		User::setValidPass(bool b) { _validPass = b; }
 void		User::setRegistered(bool b) { _registered = b; }

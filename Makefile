@@ -7,8 +7,10 @@ FILES_SOURCE		=	src/Config/Config.cpp \
 						src/Service/Service.cpp \
 						src/Service/Commands.cpp \
 						src/Service/ParseRequest.cpp \
+						src/Service/Utils.cpp \
 						src/User/User.cpp \
 						src/Hash/Hash.cpp \
+						src/Channel/Channel.cpp \
 						main.cpp
 
 O_FILE = $(FILES_SOURCE:.cpp=.o)

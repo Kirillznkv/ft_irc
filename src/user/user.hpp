@@ -11,7 +11,7 @@ private:
 	std::string _userName;
 	std::string _realName;
 	std::string _host;
-	// std::string _realHost;
+	std::string _realHost;
 	std::string _serverName;
 	bool    	_validPass;
 	bool    	_registered;
@@ -26,8 +26,8 @@ public:
 	User(const User &copy);
 	~User();
 	User &operator=(const User &op);
-	bool operator==(const User &op);
-	bool operator!=(const User &op);
+	bool operator==(const User &op) const;
+	bool operator!=(const User &op) const;
 	////////////////////////////////
 	//----------Getters-----------//
 	////////////////////////////////
@@ -38,6 +38,7 @@ public:
 	std::string	getUserName() const;
 	std::string	getRealName() const;
 	std::string	getHost() const;
+	std::string	getRealHost() const;
 	bool 		isAdmin() const;
 	bool 		isValidPass() const;
 	bool 		isRegistered() const;
@@ -50,6 +51,7 @@ public:
 	void		setUserName(std::string userName);
 	void 		setRealName(std::string realName);
 	void 		setHost(std::string host);
+	void 		setRealHost(std::string realHost);
 	void		setAdmin(bool b);
 	void		setValidPass(bool b);
 	void		setRegistered(bool b);
