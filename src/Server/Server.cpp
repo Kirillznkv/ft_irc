@@ -17,6 +17,10 @@ void    Server::createConnection() {
 }
 
 void Server::start() {
+	if (_conf.ok() == false) { // проверка везде
+		std::cout<< "Error: Fail config file\n";
+		return ;
+	}
 	User user(3);
 	user.setId(1);
 	_users.push_back(user);

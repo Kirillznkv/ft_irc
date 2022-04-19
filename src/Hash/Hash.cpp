@@ -1,4 +1,4 @@
-#include "hash.hpp"
+#include "Hash.hpp"
 
 namespace   hash {
 

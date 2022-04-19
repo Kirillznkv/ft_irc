@@ -8,6 +8,7 @@ FILES_SOURCE		=	src/Config/Config.cpp \
 						src/Service/Commands.cpp \
 						src/Service/ParseRequest.cpp \
 						src/User/User.cpp \
+						src/Hash/Hash.cpp \
 						main.cpp
 
 O_FILE = $(FILES_SOURCE:.cpp=.o)

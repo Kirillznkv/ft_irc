@@ -21,6 +21,7 @@ private:
     unsigned long               _ipAddr;
 	std::string					_pass;
 	std::vector<User>			_users;
+	Config						_conf;
 public:
     Server(unsigned short int port, std::string pass);
     ~Server();

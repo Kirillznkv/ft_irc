@@ -1,6 +1,6 @@
 #include "Config.hpp"
 
-Config::Config() : _fileName("src/Config/config.conf") { initMap(); }
+Config::Config() : _fileName("src/Config/Config.conf") { initMap(); }
 Config::~Config() {}
 
 void Config::initMap() {
@@ -10,8 +10,10 @@ void Config::initMap() {
 		return ;
 	std::string line;
 	while (getline(file, line)) {
-		if (line.find(":") == std::string::npos)
+		if (line.find(":") == std::string::npos) {
+			file.close();
 			return ;
+		}
 		_map.insert(std::make_pair(line.substr(0, line.find(':')), line.substr(line.find(':') + 2)));
 	}
 	file.close();
