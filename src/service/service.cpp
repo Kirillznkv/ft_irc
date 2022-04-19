@@ -24,8 +24,7 @@ std::vector<std::string> Server::split(const std::string& str, char delimeter) {
 }
 
 void Server::sendErrorResponse(unsigned int code, const User &user, std::string arg1, std::string arg2) {
-	std::string res = ":server_name " + std::to_string(code) + " " + user.getNickName();
-	// std::string res = ":" + config["server.name"] + " " + std::to_string(code) + " " + user.getNickName();
+	std::string res = ":" + _conf["name"] + " " + std::to_string(code) + " " + user.getNickName();
 	switch (code) {
 		case 401: res += " " + arg1 + " :No such nick/channel\n"; break;
 		case 402: res += " " + arg1 + " :No such server\n"; break;
@@ -78,8 +77,7 @@ void Server::sendErrorResponse(unsigned int code, const User &user, std::string 
 
 void Server::sendResponse(unsigned int code, const User &user, std::string arg1, std::string arg2, std::string arg3, \
 									std::string arg4, std::string arg5, std::string arg6, std::string arg7) {
-	// std::string res = ":" + config["server.name"] + " " + std::to_string(code) + " " + user.getNickName() + " ";
-	std::string res = ":server_name " + std::to_string(code) + " " + user.getNickName() + " ";
+	std::string res = ":" + _conf["name"] + " " + std::to_string(code) + " " + user.getNickName() + " ";
 	switch (code) {
 		case 302: res += ":" + arg1 + "\n"; break;
 		case 303: res += ":" + arg1 + "\n"; break;

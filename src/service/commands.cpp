@@ -51,10 +51,8 @@ void Server::quitCmd(User &user) {
 }
 
 void Server::timeCmd(User &user, std::vector<std::string> &args) {
-//	if (args.size() == 1 || args[1] == config["server.name"])
-	if (args.size() == 1)
-//		Server::sendResponse(391, user, config["server.name"], Server::getDate());
-		Server::sendResponse(391, user, "server_name", Server::getDate());
+	if (args.size() == 1 || args[1] == _conf["name"])
+		Server::sendResponse(391, user, _conf["name"], Server::getDate());
 	else
 		Server::sendErrorResponse(402, user, args[1]);
 }
@@ -62,8 +60,7 @@ void Server::timeCmd(User &user, std::vector<std::string> &args) {
 void Server::motdCmd(User &user) {
 	std::ifstream infile("data/motd");
 	if (infile) {
-		//	Server::sendResponse(375, user, config["server.name"]);
-		Server::sendResponse(375, user, "server_name");
+			Server::sendResponse(375, user, _conf["name"]);
 		std::string line;
 		while (std::getline(infile, line))
 			Server::sendResponse(372, user, line);
