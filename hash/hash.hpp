@@ -1,9 +1,9 @@
 #ifndef HASH_HPP
 # define HASH_HPP
 
-#include <string>
-#include <iostream>
-#include <sstream>
+# include <string>
+# include <iostream>
+# include <sstream>
 
 namespace   hash {
 

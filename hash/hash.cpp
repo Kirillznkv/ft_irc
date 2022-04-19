@@ -33,8 +33,8 @@ std::string to_sha256(const std::string &strIn) {
             w[i] = str[j + 3] + (str[j + 2] << 8) + (str[j + 1] << 16) + (str[j] << 24);
         }
         for (size_t i = 16; i < 64; ++i) {
-            s0 = rightRotate(w[i - 15], 7) xor rightRotate(w[i - 15], 18) xor (w[i - 15] >> 3);
-            s1 = rightRotate(w[i - 2], 17) xor rightRotate(w[i - 2], 19) xor (w[i - 2] >> 10);
+            s0 = rightRotate(w[i - 15], 7) ^ rightRotate(w[i - 15], 18) ^ (w[i - 15] >> 3);
+            s1 = rightRotate(w[i - 2], 17) ^ rightRotate(w[i - 2], 19) ^ (w[i - 2] >> 10);
             w[i] = w[i - 16] + s0 + w[i - 7] + s1;
         }
         for (size_t i = 0; i < 64; ++i) {
