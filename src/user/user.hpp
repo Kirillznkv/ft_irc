@@ -11,7 +11,7 @@ private:
 	std::string _userName;
 	std::string _realName;
 	std::string _host;
-	// std::string _realHost;
+	std::string _realHost;
 	std::string _serverName;
 	bool    	_validPass;
 	bool    	_registered;
@@ -21,13 +21,14 @@ private:
 	// bool    invisible;
 	// bool    serv_notices;
 	// bool    wallops;
+	static unsigned int		_amountUsers;
 public:
 	User(int socketFd);
 	User(const User &copy);
 	~User();
 	User &operator=(const User &op);
-	bool operator==(const User &op);
-	bool operator!=(const User &op);
+	bool operator==(const User &op) const;
+	bool operator!=(const User &op) const;
 	////////////////////////////////
 	//----------Getters-----------//
 	////////////////////////////////
@@ -38,22 +39,23 @@ public:
 	std::string	getUserName() const;
 	std::string	getRealName() const;
 	std::string	getHost() const;
+	std::string	getRealHost() const;
 	bool 		isAdmin() const;
 	bool 		isValidPass() const;
 	bool 		isRegistered() const;
 	////////////////////////////////
 	//----------Setters-----------//
 	////////////////////////////////
-	void		setId(int id);
 	void 		setServerName(std::string serverName);
 	void 		setNickName(std::string nickName);
 	void		setUserName(std::string userName);
 	void 		setRealName(std::string realName);
 	void 		setHost(std::string host);
-	void		setAdmin(bool b);
-	void		setValidPass(bool b);
-	void		setRegistered(bool b);
-	// void		setSocketFd(int fd);
+	void 		setRealHost(std::string realHost);
+	void		setAdmin(bool flag);
+	void		setValidPass(bool flag);
+	void		setRegistered(bool flag);
+	void		setSocketFd(int fd);
 };
 
 #endif

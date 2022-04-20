@@ -1,12 +1,12 @@
-#include "service.hpp"
+#include "../Server/Server.hpp"
 
-uint64_t Service::timer() {//Используется?
+uint64_t Server::timer() {
 	static struct timeval time;
 	gettimeofday(&time, NULL);
 	return ((time.tv_sec * (uint64_t)1000) + (time.tv_usec / (uint64_t)1000));
 }
 
-std::string Service::getDate() {
+std::string Server::getDate() {
 	time_t timetoday;
 	time(&timetoday);
 	// string result = asctime(localtime(&timetoday));
@@ -14,9 +14,17 @@ std::string Service::getDate() {
 	return asctime(localtime(&timetoday)); // Может быть стоит выделить память
 }
 
-void Service::sendErrorResponse(unsigned int code, const User &user, std::string arg1="", std::string arg2="") {
-	std::string res = ":server_name " + std::to_string(code) + " " + user.getNickName();
-	// std::string res = ":" + config["server.name"] + " " + std::to_string(code) + " " + user.getNickName();
+std::vector<std::string> Server::split(const std::string& str, char delimeter) {
+	std::vector<std::string> args;
+	std::istringstream f(str);
+	std::string s;
+	while (getline(f, s, delimeter))
+		args.push_back(s);
+	return args;
+}
+
+void Server::sendErrorResponse(unsigned int code, const User &user, std::string arg1, std::string arg2) {
+	std::string res = ":" + _conf["name"] + " " + std::to_string(code) + " " + user.getNickName();
 	switch (code) {
 		case 401: res += " " + arg1 + " :No such nick/channel\n"; break;
 		case 402: res += " " + arg1 + " :No such server\n"; break;
@@ -64,13 +72,12 @@ void Service::sendErrorResponse(unsigned int code, const User &user, std::string
 		case 502: res += " :Cant change mode for other users\n"; break;
 		default: res += "UNKNOWN ERROR\n"; break;
 	}
-	// Server::writing(user.getSocketFd(), res);
+	Server::send(user.getSocketFd(), res);
 }
 
-void sendResponse(unsigned int code, const User &user, std::string arg1="", std::string arg2="", std::string arg3="", \
-									std::string arg4="", std::string arg5="", std::string arg6="", std::string arg7="") {
-	// std::string res = ":" + config["server.name"] + " " + std::to_string(code) + " " + user.getNickName() + " ";
-	std::string res = ":server_name " + std::to_string(code) + " " + user.getNickName() + " ";
+void Server::sendResponse(unsigned int code, const User &user, std::string arg1, std::string arg2, std::string arg3, \
+									std::string arg4, std::string arg5, std::string arg6, std::string arg7) {
+	std::string res = ":" + _conf["name"] + " " + std::to_string(code) + " " + user.getNickName() + " ";
 	switch (code) {
 		case 302: res += ":" + arg1 + "\n"; break;
 		case 303: res += ":" + arg1 + "\n"; break;
@@ -151,5 +158,5 @@ void sendResponse(unsigned int code, const User &user, std::string arg1="", std:
 		case 259: res += ":E-Mail   " + arg1 + "\n"; break;
 		default: res += "UNKNOWN REPLY\n"; break;
 	}
-	// Server::writing(user.getSocketFd(), res);
+	Server::send(user.getSocketFd(), res);
 }

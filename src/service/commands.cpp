@@ -1,42 +1,39 @@
-#include "commands.hpp"
+#include "../Server/Server.hpp"
+#include "../Hash/Hash.hpp"
 
-void Commands::pass(User &user, std::vector<std::string> &args) {
+void Server::passCmd(User &user, std::vector<std::string> &args) {
 	if (user.isRegistered()) {
-		Service::sendErrorResponse(462, user);
+		Server::sendErrorResponse(462, user);
 		return ;
 	}
 	if (args.size() == 1) {
-		Service::sendErrorResponse(461, user, args[0]);
+		Server::sendErrorResponse(461, user, args[0]);
 		return ;
 	}
-//	Убрать комментарий как Даша добавит метод
-//	user.setValidPass(Server::isTruePass(args[1]));
-	user.setValidPass(true); // Удалить когда раскоментится предыдущее
+	user.setValidPass(args[1] == _pass);
 }
 
-void Commands::nick(User &user, std::vector<std::string> &args) {
+void Server::nickCmd(User &user, std::vector<std::string> &args) {
 	if (args.size() == 1) {
-		Service::sendErrorResponse(461, user, args[0]);
+		Server::sendErrorResponse(461, user, args[0]);
 		return ;
 	}
-//	Убрать комментарий как Даша добавит метод
-//	for (std::vector<User>::iterator it = Server::users.begin(); it != Server::users.end(); ++it) {
-//		if (it->getNickName() == args[1]) {
-//			Service::sendErrorResponse(433, user, args[1]);
-//			return ;
-//		}
-//	}
+	for (std::vector<User>::const_iterator it = _users.begin(); it != _users.end(); ++it) {
+		if (it->getNickName() == args[1]) {
+			Server::sendErrorResponse(433, user, args[1]);
+			return ;
+		}
+	}
 	user.setNickName(args[1]);
 }
 
-int Commands::user(User &user, std::vector<std::string> &args) {
+int Server::userCmd(User &user, std::vector<std::string> &args) {
 	if (args.size() < 4) {
-		Service::sendErrorResponse(461, user, args[0]);
+		Server::sendErrorResponse(461, user, args[0]);
 		return 0;
 	}
 	if (user.getNickName() == "" || user.isValidPass() == false) {
-//		Раскоментить когда Даша напишет метод
-//		Server::kickUser(user);
+		killUser(user);
 		return 0;
 	}
 	user.setUserName(args[1]);
@@ -46,53 +43,128 @@ int Commands::user(User &user, std::vector<std::string> &args) {
 	if (user.isRegistered() == true)
 		return 0;
 	user.setRegistered(true);
-	Commands::motd(user);
+	Server::motdCmd(user);
 	return 7;
 }
 
-unsigned int Commands::chooseCommand(User &user, std::vector<std::string> &args) {
-	if (args[0] == "PASS") { Commands:pass(user, args); }
-	else if (args[0] == "NICK") { Commands::nick(user, args); }
-	else if (args[0] == "USER") { return Commands::user(user, args); }
-	else if (args[0] == "QUIT") { Commands::quit(user); }
-	else if (!user.isRegistered()) { Service::sendErrorResponse(451, user); }
-	else if (args[0] == "ADMIN") { Commands::admin(user, args); }
-	else if (args[0] == "AWAY") { Commands::away(user, args); }
-	else if (args[0] == "DIE") { Commands::die(user, args); }
-	else if (args[0] == "ERROR") { Commands::error(user, args); }
-	else if (args[0] == "INFO") { Commands::info(user, args); }
-	else if (args[0] == "INVITE") { Commands::invite(user, args); }
-	else if (args[0] == "ISON") { Commands::ison(user, args); }
-	else if (args[0] == "JOIN") { Commands::join(user, args); }
-	else if (args[0] == "KICK") { Commands::kick(user, args); }
-	else if (args[0] == "KILL") { Commands::kill(user, args); }
-	else if (args[0] == "LIST") { Commands::list(user, args); }
-	else if (args[0] == "MODE") { Commands::mode(user, args); }
-	else if (args[0] == "MOTD") { Commands::motd(user); }
-	else if (args[0] == "NAMES") {Commands::names(user, args); }
-	else if (args[0] == "NOTICE") { Commands::notice(user, args); }
-	else if (args[0] == "OPER") { Commands::oper(user, args); }
-	else if (args[0] == "PART") { Commands::part(user, args); }
-	else if (args[0] == "PING") { return Commands::ping(user, args); }
-	else if (args[0] == "PONG") { return Commands::pong(user, args); }
-	else if (args[0] == "PRIVMSG") { Commands::privMsg(user, args); }
-	else if (args[0] == "REHASH") { Commands::rehash(user); }
-	else if (args[0] == "RESTART") { return Commands::restart(user); }
-	else if (args[0] == "STATS") { return Commands::stats(user, args); }
-	else if (args[0] == "TIME") { Commands::time(user, args); }
-	else if (args[0] == "TOPIC") { Commands::topic(user, args); }
-	else if (args[0] == "VERSION") { Commands::version(user, args); }
-	else if (args[0] == "WALLOPS") { Commands::wallops(user, args); }
-	else if (args[0] == "WHO") { Commands::who(user, args); }
-	else if (args[0] == "WHOIS") { Commands::whois(user, args); }
-	else if (args[0] == "WHOWAS") { Commands::whoWas(user, args); }
-	else Service::sendErrorResponse(421, user, args[0]);
+void Server::quitCmd(User &user) {
+	killUser(user);
+}
+
+void Server::operCmd(User &user, std::vector<std::string> &args) {
+	if (args.size() != 3)
+		Server::sendErrorResponse(461, user, args[0]);
+	else if (_conf["operators " + args[1]] != hash::to_sha256(args[2]))
+		Server::sendErrorResponse(464, user);
+	else {
+		user.setAdmin(true);
+		Server::sendResponse(381, user);
+	}
+}
+
+void Server::isonCmd(User &user, std::vector<std::string> &args) {
+	std::string onlineUsers = "";
+	if (args.size() < 2)
+		Server::sendErrorResponse(461, user);
+	else {
+		for (iter_user it = _users.begin(); it != _users.end(); it++)
+			for (iter_str itArg = args.begin() + 1; itArg != args.end(); itArg++)
+				if (*itArg == it->getNickName())
+					onlineUsers += it->getNickName() + " ";
+		onlineUsers.pop_back();
+		Server::sendResponse(303, user, onlineUsers);
+	}
+}
+
+void Server::timeCmd(User &user, std::vector<std::string> &args) {
+	if (args.size() == 1 || args[1] == _conf["name"])
+		Server::sendResponse(391, user, _conf["name"], Server::getDate());
+	else
+		Server::sendErrorResponse(402, user, args[1]);
+}
+
+void Server::motdCmd(User &user) {
+	std::ifstream infile("data/motd");
+	if (infile) {
+			Server::sendResponse(375, user, _conf["name"]);
+		std::string line;
+		while (std::getline(infile, line))
+			Server::sendResponse(372, user, line);
+		Server::sendResponse(376, user);
+	} else
+		Server::sendErrorResponse(422, user);
+}
+
+unsigned int Server::chooseCommand(User &user, std::vector<std::string> &args) {
+	if (args[0] == "PASS") { Server::passCmd(user, args); }
+	else if (args[0] == "NICK") { Server::nickCmd(user, args); }
+	else if (args[0] == "USER") { return Server::userCmd(user, args); }
+	else if (args[0] == "QUIT") { Server::quitCmd(user); }
+	else if (!user.isRegistered()) { Server::sendErrorResponse(451, user); }
+	else if (args[0] == "ADMIN") { Server::adminCmd(user, args); }
+	else if (args[0] == "AWAY") { Server::awayCmd(user, args); }
+	else if (args[0] == "DIE") { Server::dieCmd(user, args); }
+	else if (args[0] == "ERROR") { Server::errorCmd(user, args); }
+	else if (args[0] == "INFO") { Server::infoCmd(user, args); }
+	else if (args[0] == "INVITE") { Server::inviteCmd(user, args); }
+	else if (args[0] == "ISON") { Server::isonCmd(user, args); }
+	else if (args[0] == "JOIN") { Server::joinCmd(user, args); }
+	else if (args[0] == "KICK") { Server::kickCmd(user, args); }
+	else if (args[0] == "KILL") { Server::killCmd(user, args); }
+	else if (args[0] == "LIST") { Server::listCmd(user, args); }
+	else if (args[0] == "MODE") { Server::modeCmd(user, args); }
+	else if (args[0] == "MOTD") { Server::motdCmd(user); }
+	else if (args[0] == "NAMES") {Server::namesCmd(user, args); }
+	else if (args[0] == "NOTICE") { Server::noticeCmd(user, args); }
+	else if (args[0] == "OPER") { Server::operCmd(user, args); }
+	else if (args[0] == "PART") { Server::partCmd(user, args); }
+	else if (args[0] == "PING") { return Server::pingCmd(user, args); }
+	else if (args[0] == "PONG") { return Server::pongCmd(user, args); }
+	else if (args[0] == "PRIVMSG") { Server::privMsgCmd(user, args); }
+	else if (args[0] == "REHASH") { Server::rehashCmd(user); }
+	else if (args[0] == "RESTART") { return Server::restartCmd(user); }
+	else if (args[0] == "STATS") { return Server::statsCmd(user, args); }
+	else if (args[0] == "TIME") { Server::timeCmd(user, args); }
+	else if (args[0] == "TOPIC") { Server::topicCmd(user, args); }
+	else if (args[0] == "VERSION") { Server::versionCmd(user, args); }
+	else if (args[0] == "WALLOPS") { Server::wallopsCmd(user, args); }
+	else if (args[0] == "WHO") { Server::whoCmd(user, args); }
+	else if (args[0] == "WHOIS") { Server::whoisCmd(user, args); }
+	else if (args[0] == "WHOWAS") { Server::whoWasCmd(user, args); }
+	else Server::sendErrorResponse(421, user, args[0]);
 	return 0;
 }
 
-unsigned int Commands::process(User &user, std::string req) {
+unsigned int Server::process(User &user, std::string req) {
 	if (ParseRequest::emptyRequest(req))
 		return 0;
 	std::vector<std::string> requestArgs = ParseRequest::parseRequest(req);
-	return Commands::chooseCommand(user, requestArgs);
+	return Server::chooseCommand(user, requestArgs);
 }
+
+void	Server::adminCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
+void	Server::awayCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
+void	Server::dieCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }////////////////////////
+void	Server::errorCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }//////////////////////
+void	Server::infoCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
+void	Server::inviteCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
+void	Server::joinCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
+void	Server::kickCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
+void	Server::killCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
+void	Server::listCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
+void	Server::modeCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
+void	Server::namesCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
+void	Server::noticeCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
+void	Server::partCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
+int		Server::pingCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; return 0;}
+int		Server::pongCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; return 0;}
+void	Server::privMsgCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
+void	Server::rehashCmd(User &user) { user.getId(); }
+int		Server::restartCmd(User &user) { user.getId(); return 0; }
+bool	Server::statsCmd(User &user, std::vector<std::string> &args) { user.getId(); args[1]; return false; }////////////////////////
+void	Server::topicCmd(User &user, std::vector<std::string> &args) { user.getId(); args[1]; }
+void	Server::versionCmd(User &user, std::vector<std::string> &args) { user.getId(); args[1]; }
+void	Server::wallopsCmd(User &user, std::vector<std::string> &args) { user.getId(); args[1]; }
+void	Server::whoCmd(User &user, std::vector<std::string> &args) { user.getId(); args[1]; }
+void	Server::whoisCmd(User &user, std::vector<std::string> &args) { user.getId(); args[1]; }
+void	Server::whoWasCmd(User &user, std::vector<std::string> &args) { user.getId(); args[1]; }
