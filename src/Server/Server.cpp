@@ -31,6 +31,8 @@ void Server::start() {
 	user.setSocketFd(fd);
 	user.setId(1);
 	_users.push_back(user);
+	Channel channel("lol", user);
+	_channels.push_back(channel);
 	std::string req1 = "NICK kshanti";
 	std::string req2 = "PASS pass";
 	std::string req3 = "USER a a a a";

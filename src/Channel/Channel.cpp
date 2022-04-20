@@ -2,7 +2,7 @@
 
 Channel::~Channel() {}
 
-Channel::Channel(std::string name, User &user, std::string password = "") 
+Channel::Channel(std::string name, User &user, std::string password) 
 : _password(password), _channelName(name) {
 	_inviteOnly = false;
 	_hasPassword = (password == "") ? false : true;
@@ -15,6 +15,14 @@ Channel::Channel(std::string name, User &user, std::string password = "")
 	_users.push_back(user);
 	_operators.push_back(user);//?
 }
+
+Channel::Channel(const Channel &copy)
+:	_inviteOnly(copy._inviteOnly), _hasPassword(copy._hasPassword),
+	_secret(copy._secret), _private(copy._private), _noOutside(copy._noOutside),
+	_moderated(copy._moderated), _topicByOper(copy._topicByOper),
+	_userLimit(copy._userLimit), _topic(copy._topic), _password(copy._password),
+	_channelName(copy._channelName), _users(copy._users), _operators(copy._operators),
+	_invites(copy._invites), _voices(copy._voices), _banList(copy._banList) {}
 
 bool Channel::operator==(const Channel &op) const { return _channelName == op.getChannelName(); }
 
@@ -93,8 +101,7 @@ void Channel::sendToAll(User &sender, std::string channelName, std::string msg) 
 	std::string prefix = ":" + sender.getNickName() + "!"
 			+ sender.getUserName() + "@" + sender.getRealHost() + " MODE " + channelName + " ";
 	for (iter it = _users.begin(); it != _users.end(); ++it)
-		; // Server::writing(it->getSocketFd(), prefix + msg + "\n");
-	msg += "";//delete it
+		Server::send(it->getSocketFd(), prefix + msg + "\n");
 }
 
 void Channel::muteAll() {

@@ -29,10 +29,11 @@ private:
 	std::vector<User>	_voices;
 	std::vector<User>	_banList;
 
-	Channel(const Channel &);
+	Channel();
 	Channel			&operator=(const Channel &);
 public:
-	Channel(std::string name, User &user, std::string password);
+	Channel(std::string name, User &user, std::string password = "");
+	Channel(const Channel &copy);
 	~Channel();
 	bool					addUser(User &user, std::string password);
 	void					addUserToBanList(User &user);

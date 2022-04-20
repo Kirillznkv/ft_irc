@@ -1,10 +1,13 @@
 #include "User.hpp"
 
+unsigned int User::_amountUsers = 0;
+
 ////////////////////////////////
 //----------Constructs--------//
 ////////////////////////////////
 User::User(int socketFd)
-	: _socketFd(socketFd), _validPass(false), _registered(false), _admin(false) {}
+	: _id(_amountUsers++), _socketFd(socketFd),
+	_validPass(false), _registered(false), _admin(false) {}
 User::~User() {}
 User::User(const User &copy) {
 	this->operator=(copy);
@@ -48,7 +51,6 @@ bool 		User::isRegistered() const { return _registered; }
 ////////////////////////////////
 //----------Setters-----------//
 ////////////////////////////////
-void 		User::setId(int id) { _id = id; }
 void 		User::setServerName(std::string serverName) { _serverName = serverName; }
 void 		User::setNickName(std::string nickName) { _nickName = nickName; }
 void 		User::setUserName(std::string userName) { _userName = userName; }

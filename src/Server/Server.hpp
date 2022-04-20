@@ -12,6 +12,9 @@
 # include "../User/User.hpp"
 # include "../Config/Config.hpp"
 # include "../Service/ParseRequest.hpp"
+# include "../Channel/Channel.hpp"
+
+class Channel;
 
 class Server
 {
@@ -21,6 +24,7 @@ private:
     unsigned long               _ipAddr;
 	std::string					_pass;
 	std::vector<User>			_users;
+	std::vector<Channel>		_channels;
 	Config						_conf;
 public:
     Server(unsigned short int port, std::string pass);

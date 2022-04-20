@@ -21,6 +21,7 @@ private:
 	// bool    invisible;
 	// bool    serv_notices;
 	// bool    wallops;
+	static unsigned int		_amountUsers;
 public:
 	User(int socketFd);
 	User(const User &copy);
@@ -45,7 +46,6 @@ public:
 	////////////////////////////////
 	//----------Setters-----------//
 	////////////////////////////////
-	void		setId(int id);
 	void 		setServerName(std::string serverName);
 	void 		setNickName(std::string nickName);
 	void		setUserName(std::string userName);
