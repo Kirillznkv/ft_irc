@@ -29,7 +29,6 @@ void Server::start() {
 	}
 	User user(3);
 	user.setSocketFd(fd);
-	user.setId(1);
 	_users.push_back(user);
 	Channel channel("lol", user);
 	_channels.push_back(channel);
@@ -39,6 +38,7 @@ void Server::start() {
 	unsigned int code = process(user, req1);
 	code = process(user, req2);
 	code = process(user, req3);
+	code = process(user, req2);
 	close(fd);
 }
 
