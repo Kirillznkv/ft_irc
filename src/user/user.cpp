@@ -3,7 +3,8 @@
 ////////////////////////////////
 //----------Constructs--------//
 ////////////////////////////////
-User::User(int socketFd) : _socketFd(socketFd) {}
+User::User(int socketFd)
+	: _socketFd(socketFd), _validPass(false), _registered(false), _admin(false) {}
 User::~User() {}
 User::User(const User &copy) {
 	this->operator=(copy);
@@ -57,4 +58,4 @@ void 		User::setRealHost(std::string realHost) { _realHost = realHost; }
 void		User::setAdmin(bool b) { _admin = b; }
 void		User::setValidPass(bool b) { _validPass = b; }
 void		User::setRegistered(bool b) { _registered = b; }
-// void		User::setSocketFd(int fd) { _socketFd = fd; }
+void		User::setSocketFd(int fd) { _socketFd = fd; }

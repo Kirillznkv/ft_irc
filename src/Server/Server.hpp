@@ -25,8 +25,9 @@ private:
 public:
     Server(unsigned short int port, std::string pass);
     ~Server();
-    void	createConnection();
-	void	start();
+    void		createConnection();
+	void		start();
+	static void	send(int socketFd, std::string response);
 private:
 	void		killUser(User &user);
 	////////////////////////////////

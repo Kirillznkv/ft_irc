@@ -55,7 +55,7 @@ public:
 	void		setAdmin(bool b);
 	void		setValidPass(bool b);
 	void		setRegistered(bool b);
-	// void		setSocketFd(int fd);
+	void		setSocketFd(int fd);
 };
 
 #endif

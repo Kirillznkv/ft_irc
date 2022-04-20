@@ -1,5 +1,10 @@
 #include "Server.hpp"
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+
 Server::Server(unsigned short int port, std::string pass) : _port(port), _pass(pass) {} //todo: create object with port already
 
 Server::~Server() {}
@@ -17,11 +22,13 @@ void    Server::createConnection() {
 }
 
 void Server::start() {
+	int fd = open("output.txt", O_RDWR | O_CREAT | O_TRUNC, 0777);
 	if (_conf.ok() == false) { // проверка везде
 		std::cout<< "Error: Fail config file\n";
 		return ;
 	}
 	User user(3);
+	user.setSocketFd(fd);
 	user.setId(1);
 	_users.push_back(user);
 	std::string req1 = "NICK kshanti";
@@ -30,6 +37,10 @@ void Server::start() {
 	unsigned int code = process(user, req1);
 	code = process(user, req2);
 	code = process(user, req3);
+	close(fd);
 }
 
 void Server::killUser(User &user) { user.getHost(); }
+void Server::send(int socketFd, std::string response) {
+	write(socketFd, response.c_str(), response.size());
+}

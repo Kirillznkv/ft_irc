@@ -4,12 +4,16 @@ Channel::~Channel() {}
 
 Channel::Channel(std::string name, User &user, std::string password = "") 
 : _password(password), _channelName(name) {
-		_hasPassword = (password == "") ? false : true;
-		_noOutside = true;
-		_topicByOper = true;
-		_userLimit = 21;
-		_users.push_back(user);
-		_operators.push_back(user);//?
+	_inviteOnly = false;
+	_hasPassword = (password == "") ? false : true;
+	_secret = false;
+	_private = false;
+	_noOutside = true;
+	_moderated = false;
+	_topicByOper = true;
+	_userLimit = 21;
+	_users.push_back(user);
+	_operators.push_back(user);//?
 }
 
 bool Channel::operator==(const Channel &op) const { return _channelName == op.getChannelName(); }

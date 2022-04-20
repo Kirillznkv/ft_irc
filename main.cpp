@@ -3,10 +3,9 @@
 
 
 int     main(int argc, char **argv) {
-	if (argv)
-		;
     if (argc == 3) {
-		Server serv(6667, "pass");
+		std::string argv2(argv[2]);
+		Server serv(atoi(argv[1]), argv2);
 		serv.start();
     }
     else {
