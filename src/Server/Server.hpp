@@ -19,6 +19,9 @@ class Channel;
 class Server
 {
 private:
+	typedef std::vector<User>::iterator			iter_user;
+	typedef std::vector<Channel>::iterator		iter_channel;
+	typedef std::vector<std::string>::iterator	iter_str;
     int                         _fd;
     unsigned short int          _port;
     unsigned long               _ipAddr;
@@ -43,7 +46,7 @@ private:
 	void	errorCmd(User &user, std::vector<std::string> &args);//////////////////////
 	void	infoCmd(User &user, std::vector<std::string> &args);
 	void	inviteCmd(User &user, std::vector<std::string> &args);
-	void	isonCmd(User &user, std::vector<std::string> &args);
+	void	isonCmd(User &user, std::vector<std::string> &args);// Done
 	void	joinCmd(User &user, std::vector<std::string> &args);
 	void	kickCmd(User &user, std::vector<std::string> &args);
 	void	killCmd(User &user, std::vector<std::string> &args);
@@ -53,7 +56,7 @@ private:
 	void	namesCmd(User &user, std::vector<std::string> &args);
 	void	nickCmd(User &user, std::vector<std::string> &args);// Done
 	void	noticeCmd(User &user, std::vector<std::string> &args);
-	void	operCmd(User &user, std::vector<std::string> &args);
+	void	operCmd(User &user, std::vector<std::string> &args);// Done
 	void	partCmd(User &user, std::vector<std::string> &args);
 	void	passCmd(User &user, std::vector<std::string> &args);// Done
 	int		pingCmd(User &user, std::vector<std::string> &args);

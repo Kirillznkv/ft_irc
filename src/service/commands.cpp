@@ -1,4 +1,5 @@
 #include "../Server/Server.hpp"
+#include "../Hash/Hash.hpp"
 
 void Server::passCmd(User &user, std::vector<std::string> &args) {
 	if (user.isRegistered()) {
@@ -48,6 +49,31 @@ int Server::userCmd(User &user, std::vector<std::string> &args) {
 
 void Server::quitCmd(User &user) {
 	killUser(user);
+}
+
+void Server::operCmd(User &user, std::vector<std::string> &args) {
+	if (args.size() != 3)
+		Server::sendErrorResponse(461, user, args[0]);
+	else if (_conf["operators " + args[1]] != hash::to_sha256(args[2]))
+		Server::sendErrorResponse(464, user);
+	else {
+		user.setAdmin(true);
+		Server::sendResponse(381, user);
+	}
+}
+
+void Server::isonCmd(User &user, std::vector<std::string> &args) {
+	std::string onlineUsers = "";
+	if (args.size() < 2)
+		Server::sendErrorResponse(461, user);
+	else {
+		for (iter_user it = _users.begin(); it != _users.end(); it++)
+			for (iter_str itArg = args.begin() + 1; itArg != args.end(); itArg++)
+				if (*itArg == it->getNickName())
+					onlineUsers += it->getNickName() + " ";
+		onlineUsers.pop_back();
+		Server::sendResponse(303, user, onlineUsers);
+	}
 }
 
 void Server::timeCmd(User &user, std::vector<std::string> &args) {
@@ -122,7 +148,6 @@ void	Server::dieCmd(User &user, std::vector<std::string> &args) { user.getId(); 
 void	Server::errorCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }//////////////////////
 void	Server::infoCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
 void	Server::inviteCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
-void	Server::isonCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
 void	Server::joinCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
 void	Server::kickCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
 void	Server::killCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
@@ -130,7 +155,6 @@ void	Server::listCmd(User &user, std::vector<std::string> &args) { user.getId();
 void	Server::modeCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
 void	Server::namesCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
 void	Server::noticeCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
-void	Server::operCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
 void	Server::partCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
 int		Server::pingCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; return 0;}
 int		Server::pongCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; return 0;}

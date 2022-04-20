@@ -52,9 +52,9 @@ public:
 	void 		setRealName(std::string realName);
 	void 		setHost(std::string host);
 	void 		setRealHost(std::string realHost);
-	void		setAdmin(bool b);
-	void		setValidPass(bool b);
-	void		setRegistered(bool b);
+	void		setAdmin(bool flag);
+	void		setValidPass(bool flag);
+	void		setRegistered(bool flag);
 	void		setSocketFd(int fd);
 };
 
