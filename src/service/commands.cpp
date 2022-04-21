@@ -105,6 +105,18 @@ void Server::adminCmd(User &user, std::vector<std::string> &args) {
 		Server::sendErrorResponse(402, user, args[1]);
 }
 
+void Server::awayCmd(User &user, std::vector<std::string> &args) {
+	if (args.size() == 1) {
+		user.setAway(false);
+		Server::sendResponse(305, user);
+	}
+	else if (args.size() > 1) {
+		user.setAway(true);
+		Server::sendResponse(306, user);
+		user.setAutoReply(args[1]);
+	}
+}
+
 unsigned int Server::chooseCommand(User &user, std::vector<std::string> &args) {
 	if (args[0] == "PASS") { Server::passCmd(user, args); }
 	else if (args[0] == "NICK") { Server::nickCmd(user, args); }
@@ -153,7 +165,6 @@ unsigned int Server::process(User &user, std::string req) {
 }
 
 
-void	Server::awayCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
 void	Server::dieCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }////////////////////////
 void	Server::errorCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }//////////////////////
 void	Server::infoCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }

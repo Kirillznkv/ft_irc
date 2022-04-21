@@ -40,8 +40,8 @@ private:
 	////////////////////////////////
 	//----------Commands----------//
 	////////////////////////////////
-	void	adminCmd(User &user, std::vector<std::string> &args);
-	void	awayCmd(User &user, std::vector<std::string> &args);
+	void	adminCmd(User &user, std::vector<std::string> &args);// Done
+	void	awayCmd(User &user, std::vector<std::string> &args);// Done
 	void	dieCmd(User &user, std::vector<std::string> &args);////////////////////////
 	void	errorCmd(User &user, std::vector<std::string> &args);//////////////////////
 	void	infoCmd(User &user, std::vector<std::string> &args);

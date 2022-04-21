@@ -44,7 +44,9 @@ std::string	User::getUserName() const { return _userName; }
 std::string	User::getRealName() const { return _realName; }
 std::string	User::getHost() const { return _host; }
 std::string	User::getRealHost() const { return _realHost; }
+std::string	User::getAutoReply() const { return _autoReply; }
 bool 		User::isAdmin() const { return _admin; }
+bool 		User::isAway() const { return _away; }
 bool 		User::isValidPass() const { return _validPass; }
 bool 		User::isRegistered() const { return _registered; }
 
@@ -57,7 +59,9 @@ void 		User::setUserName(std::string userName) { _userName = userName; }
 void 		User::setRealName(std::string realName) { _realName = realName; }
 void 		User::setHost(std::string host) { _host = host; }
 void 		User::setRealHost(std::string realHost) { _realHost = realHost; }
+void 		User::setAutoReply(std::string autoReply) { _autoReply = autoReply; }
 void		User::setAdmin(bool flag) { _admin = flag; }
+void		User::setAway(bool flag) { _away = flag; }
 void		User::setValidPass(bool flag) { _validPass = flag; }
 void		User::setRegistered(bool flag) { _registered = flag; }
 void		User::setSocketFd(int fd) { _socketFd = fd; }
