@@ -46,3 +46,7 @@ std::string Config::operator [](std::string const& name) {
 std::string const Config::operator [](std::string const& name) const {
 	return (_ok && _map.find(name) != _map.end()) ? _map.find(name)->second : "";
 }
+
+void Config::reload() {
+	initMap();
+}

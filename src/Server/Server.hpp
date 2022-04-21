@@ -63,7 +63,7 @@ private:
 	int		pongCmd(User &user, std::vector<std::string> &args);// Done
 	void	privMsgCmd(User &user, std::vector<std::string> &args);
 	void	quitCmd(User &user);// Done
-	void	rehashCmd(User &user);
+	void	rehashCmd(User &user);// Done
 	int		restartCmd(User &user);// Done
 	bool	statsCmd(User &user, std::vector<std::string> &args);////////////////////////
 	void	timeCmd(User &user, std::vector<std::string> &args);// Done

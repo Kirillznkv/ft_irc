@@ -21,6 +21,7 @@ public:
 	std::string	operator [](std::string const& name);
 	std::string	const operator [](std::string const& name) const;
 	bool 		ok() const;
+	void		reload();
 };
 
 #endif
