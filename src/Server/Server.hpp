@@ -87,7 +87,7 @@ private:
 	// void	setUserModeWallops();
 	// void	setUserModeOperator();
 	int		userCmd(User &user, std::vector<std::string> &args);// Done
-	void	versionCmd(User &user, std::vector<std::string> &args);
+	void	versionCmd(User &user, std::vector<std::string> &args);// Done
 	void	wallopsCmd(User &user, std::vector<std::string> &args);
 	void	whoCmd(User &user, std::vector<std::string> &args);
 	void	whoisCmd(User &user, std::vector<std::string> &args);
