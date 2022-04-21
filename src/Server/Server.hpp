@@ -88,7 +88,7 @@ private:
 	// void	setUserModeOperator();
 	int		userCmd(User &user, std::vector<std::string> &args);// Done
 	void	versionCmd(User &user, std::vector<std::string> &args);// Done
-	void	wallopsCmd(User &user, std::vector<std::string> &args);
+	void	wallopsCmd(User &user, std::vector<std::string> &args);// Done
 	void	whoCmd(User &user, std::vector<std::string> &args);
 	void	whoisCmd(User &user, std::vector<std::string> &args);
 	void	whoWasCmd(User &user, std::vector<std::string> &args);
@@ -100,6 +100,7 @@ private:
 	uint64_t					timer();
 	std::string					getDate();
 	std::vector<std::string>	split(const std::string& str, char delimeter);
+	void						sendP2PMsg(User &sender, User& recipient, std::string arg1="", std::string arg2="", std::string arg3="");
 	void						sendErrorResponse(unsigned int code, const User &user, std::string arg1="", std::string arg2="");
 	void						sendResponse(unsigned int code, const User &user, std::string arg1="", std::string arg2="", \
 																std::string arg3="", std::string arg4="", std::string arg5="", \

@@ -191,6 +191,16 @@ void Server::versionCmd(User &user, std::vector<std::string> &args) {
 		Server::sendResponse(351, user, _conf["version"], _conf["debugLevel"], _conf["name"], _conf["release"]);
 }
 
+void Server::wallopsCmd(User &user, std::vector<std::string> &args) {
+	if (args.size() < 2)
+		Server::sendErrorResponse(461, user, args[0]);
+	else {
+		for (iter_user it = _users.begin(); it != _users.end(); ++it)
+			if (it->isAdmin())
+				Server::sendP2PMsg(user, *it, args[0], args[1]);
+	}
+}
+
 unsigned int Server::chooseCommand(User &user, std::vector<std::string> &args) {
 	if (args[0] == "PASS") { Server::passCmd(user, args); }
 	else if (args[0] == "NICK") { Server::nickCmd(user, args); }
@@ -252,7 +262,6 @@ void	Server::partCmd(User &user, std::vector<std::string> &args) { user.getId();
 void	Server::privMsgCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
 bool	Server::statsCmd(User &user, std::vector<std::string> &args) { user.getId(); args[1]; return false; }////////////////////////
 void	Server::topicCmd(User &user, std::vector<std::string> &args) { user.getId(); args[1]; }
-void	Server::wallopsCmd(User &user, std::vector<std::string> &args) { user.getId(); args[1]; }
 void	Server::whoCmd(User &user, std::vector<std::string> &args) { user.getId(); args[1]; }
 void	Server::whoisCmd(User &user, std::vector<std::string> &args) { user.getId(); args[1]; }
 void	Server::whoWasCmd(User &user, std::vector<std::string> &args) { user.getId(); args[1]; }

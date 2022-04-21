@@ -160,3 +160,14 @@ void Server::sendResponse(unsigned int code, const User &user, std::string arg1,
 	}
 	Server::send(user.getSocketFd(), res);
 }
+
+void Server::sendP2PMsg(User &sender, User& recipient, std::string arg1, std::string arg2, std::string arg3) {
+	std::string msg = ":" + sender.getNickName() + "!" + sender.getUserName() + "@" + sender.getRealHost() + " ";
+	if (arg1 != "" && arg2 == "")
+		msg += arg1 + "\n";
+	else if (arg1 != "" && arg3 == "")
+		msg += arg1 + " :" + arg2 + "\n";
+	else if (arg1 != "")
+		msg += arg1 + " " + arg2 + " :" + arg3 + "\n";
+	Server::send(recipient.getSocketFd(), msg);
+}
