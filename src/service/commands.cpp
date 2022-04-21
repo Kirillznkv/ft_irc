@@ -117,6 +117,16 @@ void Server::awayCmd(User &user, std::vector<std::string> &args) {
 	}
 }
 
+void Server::infoCmd(User &user, std::vector<std::string> &args) {
+	if (args.size() == 1 || (args.size() == 2 && args[1] == _conf["name"])) {
+		Server::sendResponse(371, user, ">| Server Information |<");
+		Server::sendResponse(371, user, "Compilation Time " + _conf["compilationTime"]);
+		Server::sendResponse(371, user, "Server Version " + _conf["version"] + "." + _conf["debugLevel"]);
+		Server::sendResponse(374, user);
+	} else
+		Server::sendErrorResponse(402, user, args[1]);
+}
+
 unsigned int Server::chooseCommand(User &user, std::vector<std::string> &args) {
 	if (args[0] == "PASS") { Server::passCmd(user, args); }
 	else if (args[0] == "NICK") { Server::nickCmd(user, args); }
@@ -167,7 +177,6 @@ unsigned int Server::process(User &user, std::string req) {
 
 void	Server::dieCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }////////////////////////
 void	Server::errorCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }//////////////////////
-void	Server::infoCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
 void	Server::inviteCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
 void	Server::joinCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
 void	Server::kickCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }

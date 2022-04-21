@@ -44,7 +44,7 @@ private:
 	void	awayCmd(User &user, std::vector<std::string> &args);// Done
 	void	dieCmd(User &user, std::vector<std::string> &args);////////////////////////
 	void	errorCmd(User &user, std::vector<std::string> &args);//////////////////////
-	void	infoCmd(User &user, std::vector<std::string> &args);
+	void	infoCmd(User &user, std::vector<std::string> &args);// Done
 	void	inviteCmd(User &user, std::vector<std::string> &args);
 	void	isonCmd(User &user, std::vector<std::string> &args);// Done
 	void	joinCmd(User &user, std::vector<std::string> &args);
