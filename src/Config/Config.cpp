@@ -26,8 +26,8 @@ void Config::checkInit() {
 	bool ok = true;
 	std::string need[] = {
 			"name", "version", "debugLevel",
-			"release", "mail", "author",
-			"operators", "compilationTime",
+			"release", "mail", "author nickname",
+			"operators", "compilationTime", "author name",
 			"maxConnections", "maxChannels",
 			"requestTimeout", "responseTimeout"
 	};
