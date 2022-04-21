@@ -165,6 +165,14 @@ int Server::pongCmd(User &user, std::vector<std::string> &args) {
 	return 8;
 }
 
+int Server::restartCmd(User &user) {
+	if (!user.isAdmin()) {
+		Server::sendErrorResponse(481, user);
+		return 0;
+	}
+	return 3;
+}
+
 unsigned int Server::chooseCommand(User &user, std::vector<std::string> &args) {
 	if (args[0] == "PASS") { Server::passCmd(user, args); }
 	else if (args[0] == "NICK") { Server::nickCmd(user, args); }
@@ -225,7 +233,6 @@ void	Server::noticeCmd(User &user, std::vector<std::string> &args) { user.getId(
 void	Server::partCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
 void	Server::privMsgCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
 void	Server::rehashCmd(User &user) { user.getId(); }
-int		Server::restartCmd(User &user) { user.getId(); return 0; }
 bool	Server::statsCmd(User &user, std::vector<std::string> &args) { user.getId(); args[1]; return false; }////////////////////////
 void	Server::topicCmd(User &user, std::vector<std::string> &args) { user.getId(); args[1]; }
 void	Server::versionCmd(User &user, std::vector<std::string> &args) { user.getId(); args[1]; }

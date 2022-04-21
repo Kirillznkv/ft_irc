@@ -64,7 +64,7 @@ private:
 	void	privMsgCmd(User &user, std::vector<std::string> &args);
 	void	quitCmd(User &user);// Done
 	void	rehashCmd(User &user);
-	int		restartCmd(User &user);
+	int		restartCmd(User &user);// Done
 	bool	statsCmd(User &user, std::vector<std::string> &args);////////////////////////
 	void	timeCmd(User &user, std::vector<std::string> &args);// Done
 	void	topicCmd(User &user, std::vector<std::string> &args);
