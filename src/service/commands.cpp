@@ -129,9 +129,9 @@ void Server::infoCmd(User &user, std::vector<std::string> &args) {
 
 void Server::killCmd(User &user, std::vector<std::string> &args) {
 	if (args.size() != 3)
-		Server::sendResponse(461, user, args[0]);
+		Server::sendErrorResponse(461, user, args[0]);
 	else if (!user.isAdmin())
-		Server::sendResponse(481, user);
+		Server::sendErrorResponse(481, user);
 	else {
 		for (iter_user it = _users.begin(); it != _users.end(); ++it) {
 			if (it->getNickName() == args[1]) {
@@ -140,8 +140,29 @@ void Server::killCmd(User &user, std::vector<std::string> &args) {
 				return;
 			}
 		}
-		Server::sendResponse(401, user, args[1]);
+		Server::sendErrorResponse(401, user, args[1]);
 	}
+}
+
+int Server::pingCmd(User &user, std::vector<std::string> &args) {
+	if (args.size() < 2) {
+		Server::sendErrorResponse(409, user);
+		return 0;
+	}
+	Server::send(user.getSocketFd(), ":" + _conf["name"] + " PONG :" + args[1] + "\n");
+	return 8;
+}
+
+int Server::pongCmd(User &user, std::vector<std::string> &args) {
+	if (args.size() < 2) {
+		Server::sendErrorResponse(409, user);
+		return 0;
+	}
+	else if (args[1] != _conf["name"]) {
+		Server::sendErrorResponse(402, user, args[1]);
+		return 0;
+	}
+	return 8;
 }
 
 unsigned int Server::chooseCommand(User &user, std::vector<std::string> &args) {
@@ -202,8 +223,6 @@ void	Server::modeCmd(User &user, std::vector<std::string> &args) { user.getId();
 void	Server::namesCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
 void	Server::noticeCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
 void	Server::partCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
-int		Server::pingCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; return 0;}
-int		Server::pongCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; return 0;}
 void	Server::privMsgCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
 void	Server::rehashCmd(User &user) { user.getId(); }
 int		Server::restartCmd(User &user) { user.getId(); return 0; }
