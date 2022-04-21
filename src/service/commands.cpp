@@ -127,6 +127,23 @@ void Server::infoCmd(User &user, std::vector<std::string> &args) {
 		Server::sendErrorResponse(402, user, args[1]);
 }
 
+void Server::killCmd(User &user, std::vector<std::string> &args) {
+	if (args.size() != 3)
+		Server::sendResponse(461, user, args[0]);
+	else if (!user.isAdmin())
+		Server::sendResponse(481, user);
+	else {
+		for (iter_user it = _users.begin(); it != _users.end(); ++it) {
+			if (it->getNickName() == args[1]) {
+				Server::send(it->getSocketFd(), args[2] + "\n");
+				Server::killUser(*it);
+				return;
+			}
+		}
+		Server::sendResponse(401, user, args[1]);
+	}
+}
+
 unsigned int Server::chooseCommand(User &user, std::vector<std::string> &args) {
 	if (args[0] == "PASS") { Server::passCmd(user, args); }
 	else if (args[0] == "NICK") { Server::nickCmd(user, args); }
@@ -180,7 +197,6 @@ void	Server::errorCmd(User &user, std::vector<std::string> &args) { user.getId()
 void	Server::inviteCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
 void	Server::joinCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
 void	Server::kickCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
-void	Server::killCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
 void	Server::listCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
 void	Server::modeCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
 void	Server::namesCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
