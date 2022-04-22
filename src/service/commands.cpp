@@ -85,7 +85,7 @@ void Server::isonCmd(User &user, std::vector<std::string> &args) {
 
 void Server::timeCmd(User &user, std::vector<std::string> &args) {
 	if (args.size() == 1 || args[1] == _conf["name"])
-		Server::sendResponse(391, user, _conf["name"], Server::getDate());
+		Server::sendResponse(391, user, _conf["name"], Utils::getDate());
 	else
 		Server::sendErrorResponse(402, user, args[1]);
 }
@@ -293,10 +293,10 @@ void Server::joinCmd(User &user, std::vector<std::string> &args) {
 		return ;
 	}
 	std::vector<std::string> channels, passwords;
-	channels = Server::split(args[1], ',');
+	channels = Utils::split(args[1], ',');
 	passwords.reserve(channels.size());
 	if (args.size() == 3)
-		passwords = Server::split(args[2], ',');
+		passwords = Utils::split(args[2], ',');
 	for (size_t i = 0; i < channels.size(); ++i){
 		std::string chName = channels[i], chPass = passwords[i];
 		if (Utils::isValidChannelName(chName) == false)

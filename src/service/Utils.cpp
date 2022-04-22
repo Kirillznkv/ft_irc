@@ -1,5 +1,28 @@
 # include "Utils.hpp"
 
+uint64_t Utils::timer() {
+	static struct timeval time;
+	gettimeofday(&time, NULL);
+	return ((time.tv_sec * (uint64_t)1000) + (time.tv_usec / (uint64_t)1000));
+}
+
+std::string Utils::getDate() {
+	time_t timetoday;
+	time(&timetoday);
+	// string result = asctime(localtime(&timetoday));
+	// return result.substr(0, result.length() - 1);
+	return asctime(localtime(&timetoday)); // Может быть стоит выделить память
+}
+
+std::vector<std::string> Utils::split(const std::string& str, char delimeter) {
+	std::vector<std::string> args;
+	std::istringstream f(str);
+	std::string s;
+	while (getline(f, s, delimeter))
+		args.push_back(s);
+	return args;
+}
+
 bool Utils::isValidChannelName(std::string chName) {
 	if (chName == "")
 		return false;

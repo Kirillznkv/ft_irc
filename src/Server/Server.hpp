@@ -103,9 +103,6 @@ private:
 	////////////////////////////////
 	//----------Service-----------//
 	////////////////////////////////
-	uint64_t					timer();
-	std::string					getDate();
-	std::vector<std::string>	split(const std::string& str, char delimeter);
 	void						sendP2PMsg(User &sender, User& recipient, std::string arg1="", std::string arg2="", std::string arg3="");
 	void						sendErrorResponse(unsigned int code, const User &user, std::string arg1="", std::string arg2="");
 	void						sendResponse(unsigned int code, const User &user, std::string arg1="", std::string arg2="", \
