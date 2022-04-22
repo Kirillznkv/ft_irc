@@ -68,7 +68,7 @@ private:
 	int		restartCmd(User &user);// Done
 	bool	statsCmd(User &user, std::vector<std::string> &args);////////////////////////
 	void	timeCmd(User &user, std::vector<std::string> &args);// Done
-	void	topicCmd(User &user, std::vector<std::string> &args);
+	void	topicCmd(User &user, std::vector<std::string> &args);// Done
 	// bool	checkModeParams();
 	// void	setChnlMode();
 	// void	setUserMode();
