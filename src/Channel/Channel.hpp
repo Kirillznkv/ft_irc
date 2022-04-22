@@ -51,6 +51,7 @@ public:
 
 	bool					isInviteOnly() const;
 	bool					isPassword() const;
+	bool					isTopicByOper() const;
 	bool					isOperator(User &user) const;
 	bool 					inChannel(User user) const;
 	bool					isUserInvited(User &user) const;
@@ -69,6 +70,7 @@ public:
 	void					setModeratedFlag(bool flag);
 	void					setUserLimit(unsigned int limit);
 	void					setPassword(std::string pass);
+	void					setTopic(std::string topic);
 	void					resetPassword();
 
 	bool					operator==(const Channel &op) const;

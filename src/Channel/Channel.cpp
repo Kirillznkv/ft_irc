@@ -38,6 +38,7 @@ void Channel::setOutsideFlag(bool flag) { _noOutside = flag; }
 void Channel::setModeratedFlag(bool flag) { _moderated = flag; }
 void Channel::setUserLimit(unsigned int limit) { _userLimit = limit; }
 void Channel::setPassword(std::string pass) { _password = pass; _hasPassword = true; }
+void Channel::setTopic(std::string topic) { _topic = topic; }
 void Channel::resetPassword() { _password = ""; _hasPassword = false; }
 
 ////////////////////////////////
@@ -63,6 +64,7 @@ bool Channel::isUserInvited(User &user) const {
 }
 bool Channel::isInviteOnly() const { return _inviteOnly; }
 bool Channel::isPassword() const { return _hasPassword; }
+bool Channel::isTopicByOper() const { return _topicByOper; }
 std::string Channel::getChannelName() const { return _channelName; }
 std::string Channel::getChannelTopic() const { return _topic; }
 std::vector<User>& Channel::getOpers() { return _operators; }

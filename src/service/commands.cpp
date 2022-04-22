@@ -343,6 +343,38 @@ void Server::inviteCmd(User &user, std::vector<std::string> &args) {
 		Server::sendResponse(301, user, invUser, itInvUser->getAutoReply());
 }
 
+void Server::topicCmd(User &user, std::vector<std::string> &args) {
+	if (args.size() < 2) {
+		Server::sendErrorResponse(461, user, args[0]);
+		return ;
+	}
+	std::string chName = args[1];
+	if (Utils::isChannelExist(_channels, chName) == false) {
+		Server::sendErrorResponse(403, user, chName);
+		return ;
+	}
+	iter_channel itChannel = Utils::findChannel(_channels, chName);
+	if (Utils::isUserExist(itChannel->getUsers(), user.getNickName()) == false) {
+		Server::sendErrorResponse(442, user, args[1]);
+		return ;
+	}
+	if (args.size() == 2) {
+		if (itChannel->getChannelTopic() != "")
+			Server::sendResponse(332, user, chName, itChannel->getChannelTopic());
+		else
+			Server::sendResponse(331, user, chName);
+	}
+	else {
+		if (itChannel->isTopicByOper() && Utils::isUserExist(itChannel->getOpers(), user.getNickName()) == false)
+			Server::sendErrorResponse(482, user, chName);
+		else {
+			itChannel->setTopic(args[2]);
+			for (iter_user usr = itChannel->getUsers().begin(); usr != itChannel->getUsers().end(); ++usr)
+				Server::sendP2PMsg(user, *usr, args[0], chName, args[2]);
+		}
+	}
+}
+
 void	Server::dieCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }////////////////////////
 void	Server::errorCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }//////////////////////
 void	Server::kickCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
@@ -353,7 +385,6 @@ void	Server::noticeCmd(User &user, std::vector<std::string> &args) { user.getId(
 void	Server::partCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
 void	Server::privMsgCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
 bool	Server::statsCmd(User &user, std::vector<std::string> &args) { user.getId(); args[1]; return false; }////////////////////////
-void	Server::topicCmd(User &user, std::vector<std::string> &args) { user.getId(); args[1]; }
 void	Server::whoCmd(User &user, std::vector<std::string> &args) { user.getId(); args[1]; }
 void	Server::whoisCmd(User &user, std::vector<std::string> &args) { user.getId(); args[1]; }
 void	Server::whoWasCmd(User &user, std::vector<std::string> &args) { user.getId(); args[1]; }
