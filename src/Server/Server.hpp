@@ -96,6 +96,11 @@ private:
 	unsigned int 	chooseCommand(User &user, std::vector<std::string> &args);
 	unsigned int	process(User &user, std::string req);
 	////////////////////////////////
+	//----------Utils-------------//
+	////////////////////////////////
+	void						joinToChannel(User &user, std::string chName, std::string chPass);
+	void						createAndJoinToChannel(User &user, std::string chName, std::string chPass);
+	////////////////////////////////
 	//----------Service-----------//
 	////////////////////////////////
 	uint64_t					timer();

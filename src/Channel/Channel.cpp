@@ -45,8 +45,21 @@ void Channel::resetPassword() { _password = ""; _hasPassword = false; }
 ////////////////////////////////
 bool Channel::inChannel(User user) const{
 	for (const_iter it = _users.begin(); it != _users.end(); ++it)
-		if (*it == user) return true;
-		return false;
+		if (*it == user)
+			return true;
+	return false;
+}
+bool Channel::isOperator(User &user) const {
+	for (const_iter it = _operators.begin(); it != _operators.end(); ++it)
+		if (*it == user)
+			return true;
+	return false;
+}
+bool Channel::isUserInvited(User &user) const {
+	for (const_iter it = _invites.begin(); it != _invites.end(); ++it)
+		if (*it == user)
+			return true;
+	return false;
 }
 bool Channel::isInviteOnly() const { return _inviteOnly; }
 bool Channel::isPassword() const { return _hasPassword; }
@@ -63,36 +76,35 @@ std::vector<User> &Channel::getInvites() { return _invites; }
 ////////////////////////////////
 bool Channel::addUser(User &user, std::string password = "") {
 	if (isPassword() && password != _password)
-		// Server::sendErrorResponse(475, user, _channelName);   //обработать этот запрос в сервере(commands)
 		return false;
 	_users.push_back(user);
 	return true;
 }
 
 void Channel::addUserToBanList(User &user) {
-	if (Utils::isUserExist(_banList, user) == false)
+	if (Utils::isUserExist(_banList, user.getNickName()) == false)
 		_banList.push_back(user);
 }
 void Channel::addUserToInviteList(User &user) {
-	if (Utils::isUserExist(_invites, user) == false)
+	if (Utils::isUserExist(_invites, user.getNickName()) == false)
 		_invites.push_back(user);
 }
 void Channel::addUserToVoiceList(User &user) {
-	if (Utils::isUserExist(_voices, user) == false)
+	if (Utils::isUserExist(_voices, user.getNickName()) == false)
 		_voices.push_back(user);
 }
 void Channel::addOperator(User &user) {
-	if (Utils::isUserExist(_operators, user) == false)
+	if (Utils::isUserExist(_operators, user.getNickName()) == false)
 		_operators.push_back(user);
 }
 
 void Channel::deleteOperator(User &user) {
-	iter it = Utils::findUser(_operators, user);
+	iter it = Utils::findUser(_operators, user.getNickName());
 	if (it != _operators.end())
 		_operators.erase(it);
 }
 void Channel::deleteUser(User &user) {
-	iter it = Utils::findUser(_users, user);
+	iter it = Utils::findUser(_users, user.getNickName());
 	if (it != _users.end())
 		_users.erase(it);
 	deleteOperator(user);

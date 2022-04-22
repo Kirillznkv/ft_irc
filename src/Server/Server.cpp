@@ -35,10 +35,12 @@ void Server::start() {
 	std::string req1 = "NICK kshanti";
 	std::string req2 = "PASS pass";
 	std::string req3 = "USER a a a a";
+	std::string req4 = "JOIN #kek";
 	unsigned int code = process(user, req1);
 	code = process(user, req2);
 	code = process(user, req3);
 	code = process(user, req2);
+	code = process(user, req4);
 	close(fd);
 }
 

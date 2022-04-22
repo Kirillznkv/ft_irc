@@ -1,6 +1,13 @@
 #include "../Server/Server.hpp"
 #include "../Hash/Hash.hpp"
 
+unsigned int Server::process(User &user, std::string req) {
+	if (ParseRequest::emptyRequest(req))
+		return 0;
+	std::vector<std::string> requestArgs = ParseRequest::parseRequest(req);
+	return Server::chooseCommand(user, requestArgs);
+}
+
 void Server::passCmd(User &user, std::vector<std::string> &args) {
 	if (user.isRegistered()) {
 		Server::sendErrorResponse(462, user);
@@ -241,18 +248,70 @@ unsigned int Server::chooseCommand(User &user, std::vector<std::string> &args) {
 	return 0;
 }
 
-unsigned int Server::process(User &user, std::string req) {
-	if (ParseRequest::emptyRequest(req))
-		return 0;
-	std::vector<std::string> requestArgs = ParseRequest::parseRequest(req);
-	return Server::chooseCommand(user, requestArgs);
+
+void Server::joinToChannel(User &user, std::string chName, std::string chPass) {
+	iter_channel it = Utils::findChannel(_channels, chName);
+	if (Utils::isUserExist(it->getUsers(), user.getNickName())) {
+		Server::sendErrorResponse(443, user, chName);
+		return ;
+	}
+	if (Utils::isUserExist(it->getBanList(), user.getNickName())) {
+		Server::sendErrorResponse(474, user, chName);
+		return ;
+	}
+	if (it->isInviteOnly() && Utils::isUserExist(it->getInvites(), user.getNickName()) == false) {
+		Server::sendErrorResponse(473, user, chName);
+		return ;
+	}
+	bool isAdded = it->addUser(user, chPass);
+	if (isAdded == false)
+		Server::sendErrorResponse(475, user, chName);
+	else {
+		user.getJoinedChannels().push_back(*it);
+		for (iter_user userInChannel = it->getUsers().begin(); userInChannel != it->getUsers().end(); ++userInChannel)
+			Server::sendP2PMsg(user, *userInChannel, "JOIN", chName);
+		if (it->getChannelTopic() != "")
+			Server::sendResponse(332, user, chName, it->getChannelTopic());
+		else
+			Server::sendResponse(331, user, chName);
+		Server::sendResponse(353, user, "= " + chName, Utils::getUsers(*it));
+		Server::sendResponse(366, user, chName);
+	}
+}
+void Server::createAndJoinToChannel(User &user, std::string chName, std::string chPass) {
+	Channel newChannel = Channel(chName, user, chPass);
+	_channels.push_back(newChannel);
+	Server::sendP2PMsg(user, user, "JOIN", chName);
+	Server::sendResponse(331, user, chName, newChannel.getChannelTopic());
+	Server::sendResponse(353, user, "= " + chName, "@" + user.getNickName());
+	Server::sendResponse(366, user, chName);
+}
+
+void Server::joinCmd(User &user, std::vector<std::string> &args) {
+	if (args.size() == 1) {
+		Server::sendErrorResponse(461, user, args[0]);
+		return ;
+	}
+	std::vector<std::string> channels, passwords;
+	channels = Server::split(args[1], ',');
+	passwords.reserve(channels.size());
+	if (args.size() == 3)
+		passwords = Server::split(args[2], ',');
+	for (size_t i = 0; i < channels.size(); ++i){
+		std::string chName = channels[i], chPass = passwords[i];
+		if (Utils::isValidChannelName(chName) == false)
+			Server::sendErrorResponse(403, user, chName);
+		else if (Utils::isChannelExist(_channels, chName))
+			joinToChannel(user, chName, chPass);
+		else
+			createAndJoinToChannel(user, chName, chPass);
+	}
 }
 
 
 void	Server::dieCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }////////////////////////
 void	Server::errorCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }//////////////////////
 void	Server::inviteCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
-void	Server::joinCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
 void	Server::kickCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
 void	Server::listCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
 void	Server::modeCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
