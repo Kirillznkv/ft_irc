@@ -308,10 +308,43 @@ void Server::joinCmd(User &user, std::vector<std::string> &args) {
 	}
 }
 
+void Server::inviteCmd(User &user, std::vector<std::string> &args) {
+	if (args.size() < 3) {
+		Server::sendErrorResponse(461, user, args[0]);
+		return ;
+	}
+	std::string invUser = args[1], invChannel = args[2];
+	if (Utils::isChannelExist(_channels, invChannel) == false) {
+		Server::sendErrorResponse(403, user, invChannel);
+		return ;
+	}
+	if (Utils::isUserExist(_users, invUser) == false) {
+		Server::sendErrorResponse(401, user, invUser);
+		return ;
+	}
+	iter_user itInvUser = Utils::findUser(_users, invUser);
+	iter_channel itInvChannel = Utils::findChannel(_channels, invChannel);
+	if (Utils::isUserExist(itInvChannel->getUsers(), user.getNickName()) == false) {
+		Server::sendErrorResponse(442, user, invChannel);
+		return ;
+	}
+	if (Utils::isUserExist(itInvChannel->getUsers(), invUser) == false) {
+		Server::sendErrorResponse(443, user, invUser, invChannel);
+		return ;
+	}
+	if (itInvChannel->isInviteOnly() && Utils::isUserExist(itInvChannel->getOpers(), user.getNickName()) == false) {
+		Server::sendErrorResponse(482, user, invChannel);
+		return ;
+	}
+	itInvChannel->addUserToInviteList(*itInvUser);
+	Server::sendResponse(341, user, invChannel, invUser);
+	Server::sendP2PMsg(user, *itInvUser, args[0], itInvUser->getNickName(), invChannel);
+	if (itInvUser->isAway())
+		Server::sendResponse(301, user, invUser, itInvUser->getAutoReply());
+}
 
 void	Server::dieCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }////////////////////////
 void	Server::errorCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }//////////////////////
-void	Server::inviteCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
 void	Server::kickCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
 void	Server::listCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
 void	Server::modeCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
