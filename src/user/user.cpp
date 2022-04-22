@@ -49,6 +49,7 @@ bool 		User::isAdmin() const { return _admin; }
 bool 		User::isAway() const { return _away; }
 bool 		User::isValidPass() const { return _validPass; }
 bool 		User::isRegistered() const { return _registered; }
+std::vector<Channel>	&User::getJoinedChannels() { return _joinedChannels; }
 
 ////////////////////////////////
 //----------Setters-----------//

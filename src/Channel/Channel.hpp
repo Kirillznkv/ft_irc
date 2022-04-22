@@ -6,6 +6,8 @@
 # include "../Server/Server.hpp"
 # include "../Service/Utils.hpp"
 
+class User;
+
 class Channel {
 private:
 	typedef std::vector<User>::iterator			iter;

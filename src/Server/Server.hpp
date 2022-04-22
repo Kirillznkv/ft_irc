@@ -15,6 +15,7 @@
 # include "../Channel/Channel.hpp"
 
 class Channel;
+class User;
 
 class Server
 {

@@ -2,6 +2,9 @@
 #define USER_HPP
 
 # include <string>
+# include "../Channel/Channel.hpp"
+
+class Channel;
 
 class User {
 private:
@@ -22,6 +25,7 @@ private:
 	// bool    invisible;
 	// bool    serv_notices;
 	// bool    wallops;
+	std::vector<Channel>	_joinedChannels;
 	static unsigned int		_amountUsers;
 public:
 	User(int socketFd);
@@ -46,6 +50,7 @@ public:
 	bool 		isAway() const;
 	bool 		isValidPass() const;
 	bool 		isRegistered() const;
+	std::vector<Channel>	&getJoinedChannels();
 	////////////////////////////////
 	//----------Setters-----------//
 	////////////////////////////////

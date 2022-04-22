@@ -4,6 +4,8 @@
 # include <vector>
 # include "../User/User.hpp"
 
+class User;
+
 class Utils {
 public:
 	static bool							isUserExist(const std::vector<User> &vec, User &user);
