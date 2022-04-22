@@ -13,7 +13,8 @@ Channel::Channel(std::string name, User &user, std::string password)
 	_topicByOper = true;
 	_userLimit = 21;
 	_users.push_back(user);
-	_operators.push_back(user);//?
+	_operators.push_back(user);
+	user.getJoinedChannels().push_back(*this);
 }
 
 Channel::Channel(const Channel &copy)
