@@ -32,11 +32,12 @@ private:
 	std::vector<User>	_banList;
 
 	Channel();
-	Channel			&operator=(const Channel &);
 public:
 	Channel(std::string name, User &user, std::string password = "");
 	Channel(const Channel &copy);
 	~Channel();
+	Channel			&operator=(const Channel &);
+	bool			operator==(const Channel &op) const;
 	bool					addUser(User &user, std::string password);
 	void					addUserToBanList(User &user);
 	void					addUserToInviteList(User &user);
@@ -72,8 +73,6 @@ public:
 	void					setPassword(std::string pass);
 	void					setTopic(std::string topic);
 	void					resetPassword();
-
-	bool					operator==(const Channel &op) const;
 };
 
 #endif

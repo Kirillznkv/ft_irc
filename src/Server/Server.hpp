@@ -49,7 +49,7 @@ private:
 	void	inviteCmd(User &user, std::vector<std::string> &args);// Done
 	void	isonCmd(User &user, std::vector<std::string> &args);// Done
 	void	joinCmd(User &user, std::vector<std::string> &args);// Done
-	void	kickCmd(User &user, std::vector<std::string> &args);
+	void	kickCmd(User &user, std::vector<std::string> &args);// Done
 	void	killCmd(User &user, std::vector<std::string> &args);// Done
 	void	listCmd(User &user, std::vector<std::string> &args);
 	void	modeCmd(User &user, std::vector<std::string> &args);

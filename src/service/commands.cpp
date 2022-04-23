@@ -355,7 +355,7 @@ void Server::topicCmd(User &user, std::vector<std::string> &args) {
 	}
 	iter_channel itChannel = Utils::findChannel(_channels, chName);
 	if (Utils::isUserExist(itChannel->getUsers(), user.getNickName()) == false) {
-		Server::sendErrorResponse(442, user, args[1]);
+		Server::sendErrorResponse(442, user, chName);
 		return ;
 	}
 	if (args.size() == 2) {
@@ -375,9 +375,69 @@ void Server::topicCmd(User &user, std::vector<std::string> &args) {
 	}
 }
 
+/*
+	Some server software allows you to specify multiple channels
+	or nicknames by separating them with commas (e.g. KICK #v3 tom,jerry).
+	However, this is not universally supported so stick to one channel and nick per kick command.
+*/
+void Server::kickCmd(User &user, std::vector<std::string> &args) {
+	if (args.size() < 3) {
+		Server::sendErrorResponse(461, user, args[0]);
+		return ;
+	}
+	std::string chName = args[1], kickUserName = args[2];
+	if (Utils::isChannelExist(_channels, chName) == false) {
+		Server::sendErrorResponse(403, user, chName);
+		return ;
+	}
+	iter_channel itChannel = Utils::findChannel(_channels, chName);
+	if (Utils::isUserExist(itChannel->getUsers(), user.getNickName()) == false) {
+		Server::sendErrorResponse(442, user, chName);
+		return ;
+	}
+	if (Utils::isUserExist(itChannel->getOpers(), user.getNickName()) == false) {
+		Server::sendErrorResponse(482, user, chName);
+		return ;
+	}
+	if (Utils::isUserExist(itChannel->getUsers(), kickUserName) == false) {
+		Server::sendErrorResponse(401, user, chName);
+		return ;
+	}
+	std::string comment = user.getNickName();
+	if (args.size() > 3)
+		comment = args[3];
+	for (iter_user usr = itChannel->getUsers().begin(); usr != itChannel->getUsers().end(); ++usr)
+		Server::sendP2PMsg(user, *usr, args[0], itChannel->getChannelName(), kickUserName + " :" + comment);
+	if (Utils::isUserExist(itChannel->getOpers(), kickUserName) && itChannel->getOpers().size() == 1) {
+		if (itChannel->getUsers().size() == 1) {
+			iter_user itKickUser = Utils::findUser(_users, kickUserName);
+			iter_channel itKickChannel = Utils::findChannel(itKickUser->getJoinedChannels(), chName);
+			itKickUser->getJoinedChannels().erase(itKickChannel);
+			itKickChannel = Utils::findChannel(_channels, chName);
+			_channels.erase(itKickChannel);
+		}
+		else {
+			iter_user newOper;
+			for (newOper = itChannel->getUsers().begin(); newOper != itChannel->getUsers().end(); ++newOper)
+				if (itChannel->isOperator(*newOper) == false)
+					break ;
+			itChannel->addOperator(*newOper);
+			Server::sendP2PMsg(user, *newOper, "MODE", chName, newOper->getNickName() + " is operator now");
+			iter_user itKick = Utils::findUser(itChannel->getOpers(), kickUserName);
+			if (itKick != itChannel->getOpers().end())
+				itChannel->getOpers().erase(itKick);
+			itKick = Utils::findUser(itChannel->getUsers(), kickUserName);
+			if (itKick != itChannel->getUsers().end())
+				itChannel->getUsers().erase(itKick);
+			iter_user itKickUser = Utils::findUser(_users, kickUserName);
+			iter_channel itKickChannel = Utils::findChannel(itKickUser->getJoinedChannels(), chName);
+			itKickUser->getJoinedChannels().erase(itKickChannel);
+		}
+	}
+}
+
 void	Server::dieCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }////////////////////////
 void	Server::errorCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }//////////////////////
-void	Server::kickCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
 void	Server::listCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
 void	Server::modeCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
 void	Server::namesCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }

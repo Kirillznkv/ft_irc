@@ -25,6 +25,28 @@ Channel::Channel(const Channel &copy)
 	_channelName(copy._channelName), _users(copy._users), _operators(copy._operators),
 	_invites(copy._invites), _voices(copy._voices), _banList(copy._banList) {}
 
+Channel &Channel::operator=(const Channel &copy) {
+	if (this == &copy)
+		return *this;
+	_inviteOnly = copy._inviteOnly;
+	_hasPassword = copy._hasPassword;
+	_secret = copy._secret;
+	_private = copy._private;
+	_noOutside = copy._noOutside;
+	_moderated = copy._moderated;
+	_topicByOper = copy._topicByOper;
+	_userLimit = copy._userLimit;
+	_topic = copy._topic;
+	_password = copy._password;
+	_channelName = copy._channelName;
+	_users = copy._users;
+	_operators = copy._operators;
+	_invites = copy._invites;
+	_voices = copy._voices;
+	_banList = copy._banList;
+	return *this;
+}
+
 bool Channel::operator==(const Channel &op) const { return _channelName == op.getChannelName(); }
 
 ////////////////////////////////
