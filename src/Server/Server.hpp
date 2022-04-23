@@ -58,7 +58,7 @@ private:
 	void	nickCmd(User &user, std::vector<std::string> &args);// Done
 	void	noticeCmd(User &user, std::vector<std::string> &args);
 	void	operCmd(User &user, std::vector<std::string> &args);// Done
-	void	partCmd(User &user, std::vector<std::string> &args);
+	void	partCmd(User &user, std::vector<std::string> &args);// Done
 	void	passCmd(User &user, std::vector<std::string> &args);// Done
 	int		pingCmd(User &user, std::vector<std::string> &args);// Done
 	int		pongCmd(User &user, std::vector<std::string> &args);// Done

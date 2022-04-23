@@ -40,18 +40,27 @@ void Server::start() {
 	std::string req8 = "LIST";
 	std::string req9 = "NAMES";
 	std::string req10 = "NAMES kshanti";
-	unsigned int code = process(user, req1);
-	code = process(user, req2);
-	code = process(user, req3);
-	code = process(user, req2);
-	code = process(user, req4);
-	code = process(user, req5);
-	code = process(user, req6);
-	code = process(user, req7);
-	code = process(user, req8);
-	code = process(user, req9);
-	code = process(user, req10);
+	std::string req11 = "PART #lol,#kek";
+	unsigned int code = process(_users[0], req1);
+	code = process(_users[0], req2);
+	code = process(_users[0], req3);
+	code = process(_users[0], req2);
+	code = process(_users[0], req4);
+	code = process(_users[0], req5);
+	code = process(_users[0], req6);
+	code = process(_users[0], req7);
+	code = process(_users[0], req8);
+	code = process(_users[0], req9);
+	code = process(_users[0], req10);
+	code = process(_users[0], req11);
+	code = process(_users[0], req8);
 	close(fd);
+	std::cout<<"\nchannels: ";
+	for (iter_channel i = _channels.begin(); i != _channels.end(); ++i)
+		std::cout<<i->getChannelName()<<" ";
+	std::cout<<"\nusers: ";
+	for (iter_user i = _users.begin(); i != _users.end(); ++i)
+		std::cout<<i->getNickName()<<" ";
 }
 
 void Server::killUser(User &user) { user.getHost(); }
