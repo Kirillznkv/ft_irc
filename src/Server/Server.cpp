@@ -38,6 +38,8 @@ void Server::start() {
 	std::string req6 = "JOIN &myFirstChannel";
 	std::string req7 = "JOIN &mySecondChannel 123";
 	std::string req8 = "LIST";
+	std::string req9 = "NAMES";
+	std::string req10 = "NAMES kshanti";
 	unsigned int code = process(user, req1);
 	code = process(user, req2);
 	code = process(user, req3);
@@ -47,6 +49,8 @@ void Server::start() {
 	code = process(user, req6);
 	code = process(user, req7);
 	code = process(user, req8);
+	code = process(user, req9);
+	code = process(user, req10);
 	close(fd);
 }
 

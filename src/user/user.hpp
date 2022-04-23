@@ -22,7 +22,7 @@ private:
 	bool		_admin;
 	// int     registerPhase;
 	bool		_away;
-	// bool    invisible;
+	bool		_invisible;
 	// bool    serv_notices;
 	// bool    wallops;
 	std::vector<Channel>	_joinedChannels;
@@ -50,6 +50,7 @@ public:
 	bool 		isAway() const;
 	bool 		isValidPass() const;
 	bool 		isRegistered() const;
+	bool 		isInvisible() const;
 	std::vector<Channel>	&getJoinedChannels();
 	////////////////////////////////
 	//----------Setters-----------//
@@ -65,6 +66,7 @@ public:
 	void		setAway(bool flag);
 	void		setValidPass(bool flag);
 	void		setRegistered(bool flag);
+	void		setInvisible(bool flag);
 	void		setSocketFd(int fd);
 };
 

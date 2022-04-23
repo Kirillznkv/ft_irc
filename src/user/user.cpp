@@ -7,7 +7,8 @@ unsigned int User::_amountUsers = 0;
 ////////////////////////////////
 User::User(int socketFd)
 	: _id(_amountUsers++), _socketFd(socketFd),
-	_validPass(false), _registered(false), _admin(false) {}
+	_validPass(false), _registered(false), _admin(false),
+	_away(false), _invisible(false) {}
 User::~User() {}
 User::User(const User &copy) {
 	this->operator=(copy);
@@ -27,6 +28,8 @@ User &User::operator=(const User &op) {
 		_validPass = op.isValidPass();
 		_registered = op.isRegistered();
 		_admin = op.isAdmin();
+		_away = op.isAway();
+		_invisible = op.isInvisible();
 	}
 	return *this;
 }
@@ -49,6 +52,7 @@ bool 		User::isAdmin() const { return _admin; }
 bool 		User::isAway() const { return _away; }
 bool 		User::isValidPass() const { return _validPass; }
 bool 		User::isRegistered() const { return _registered; }
+bool 		User::isInvisible() const { return _invisible; }
 std::vector<Channel>	&User::getJoinedChannels() { return _joinedChannels; }
 
 ////////////////////////////////
@@ -65,4 +69,5 @@ void		User::setAdmin(bool flag) { _admin = flag; }
 void		User::setAway(bool flag) { _away = flag; }
 void		User::setValidPass(bool flag) { _validPass = flag; }
 void		User::setRegistered(bool flag) { _registered = flag; }
+void		User::setInvisible(bool flag) { _invisible = flag; }
 void		User::setSocketFd(int fd) { _socketFd = fd; }

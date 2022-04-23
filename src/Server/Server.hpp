@@ -54,7 +54,7 @@ private:
 	void	listCmd(User &user, std::vector<std::string> &args);// Done
 	void	modeCmd(User &user, std::vector<std::string> &args);
 	void	motdCmd(User &user);// Done
-	void	namesCmd(User &user, std::vector<std::string> &args);
+	void	namesCmd(User &user, std::vector<std::string> &args);// Done
 	void	nickCmd(User &user, std::vector<std::string> &args);// Done
 	void	noticeCmd(User &user, std::vector<std::string> &args);
 	void	operCmd(User &user, std::vector<std::string> &args);// Done

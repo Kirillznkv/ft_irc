@@ -469,10 +469,43 @@ void Server::listCmd(User &user, std::vector<std::string> &args) {
 	}
 }
 
+void Server::namesCmd(User &user, std::vector<std::string> &args) {
+	if (args.size() == 1) {
+		for (iter_channel itChannel = _channels.begin(); itChannel != _channels.end(); ++itChannel) {
+			if (!(itChannel->isPrivate() || itChannel->isSecret()) || \
+					Utils::isChannelExist(user.getJoinedChannels(), itChannel->getChannelName())) {
+				Server::sendResponse(353, user, "= " + itChannel->getChannelName(), Utils::getUsers(*itChannel));
+			}
+		}
+		std::string aloneUsers = "";
+		for (iter_user usr = _users.begin(); usr != _users.end(); usr++) {
+			if (usr->getJoinedChannels().empty()) {
+				if (usr->isInvisible() == false || usr->getNickName() == user.getNickName())
+					aloneUsers += usr->getNickName() + " ";
+			}
+		}
+		aloneUsers.pop_back();
+		Server::sendResponse(353, user, "* *", aloneUsers);
+		Server::sendResponse(366, user, "*");
+	}
+	else {
+		std::vector<std::string> channelsCheck = Utils::split(args[1], ',');
+		for (iter_str itChannelName = channelsCheck.begin(); itChannelName != channelsCheck.end(); ++itChannelName) {
+			if (Utils::isChannelExist(_channels, *itChannelName)) {
+				iter_channel itChannel = Utils::findChannel(_channels, *itChannelName);
+				if (!(itChannel->isPrivate() || itChannel->isSecret()) || \
+						Utils::isChannelExist(user.getJoinedChannels(), itChannel->getChannelName())) {
+					Server::sendResponse(353, user, "= " + itChannel->getChannelName(), Utils::getUsers(*itChannel));
+				}
+				Server::sendResponse(366, user, itChannel->getChannelName());
+			}
+		}
+	}
+}
+
 void	Server::dieCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }////////////////////////
 void	Server::errorCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }//////////////////////
 void	Server::modeCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
-void	Server::namesCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
 void	Server::noticeCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
 void	Server::partCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
 void	Server::privMsgCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
