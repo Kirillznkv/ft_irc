@@ -436,9 +436,41 @@ void Server::kickCmd(User &user, std::vector<std::string> &args) {
 	}
 }
 
+void Server::listCmd(User &user, std::vector<std::string> &args) {
+	if (args.size() == 1) {
+		Server::sendResponse(321, user);
+		for (iter_channel itChannel = _channels.begin(); itChannel != _channels.end(); itChannel++) {
+			if (!itChannel->isSecret()) {
+				if (itChannel->isPrivate() == false || Utils::isUserExist(itChannel->getUsers(), user.getNickName()))
+					Server::sendResponse(322, user, itChannel->getChannelName(), std::to_string(itChannel->getUsers().size()), itChannel->getChannelTopic());
+				else
+					Server::sendResponse(322, user, "PRV");
+			}
+		}
+		Server::sendResponse(323, user);
+	} else if (args.size() == 3 && args[2] != _conf["name"])
+		Server::sendErrorResponse(402, user, args[2]);
+	else {
+		Server::sendResponse(321, user);
+		std::vector<std::string> channels = Utils::split(args[1], ',');
+		for (iter_str itFindChannels = channels.begin(); itFindChannels != channels.end(); ++itFindChannels) {
+			for (iter_channel itAllChannels = _channels.begin(); itAllChannels != _channels.end(); ++itAllChannels) {
+				if (*itFindChannels == itAllChannels->getChannelName() && itAllChannels->isSecret() == false) {
+					if (itAllChannels->isPrivate() == false || Utils::isUserExist(itAllChannels->getUsers(), user.getNickName()))
+						Server::sendResponse(322, user, itAllChannels->getChannelName(), std::to_string(itAllChannels->getUsers().size()), itAllChannels->getChannelTopic());
+					else
+						Server::sendResponse(322, user, "PRV");
+				}
+				if (*itFindChannels == itAllChannels->getChannelName())
+					break;
+			}
+		}
+		Server::sendResponse(323, user);
+	}
+}
+
 void	Server::dieCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }////////////////////////
 void	Server::errorCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }//////////////////////
-void	Server::listCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
 void	Server::modeCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
 void	Server::namesCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
 void	Server::noticeCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }

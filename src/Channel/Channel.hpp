@@ -53,6 +53,8 @@ public:
 	bool					isInviteOnly() const;
 	bool					isPassword() const;
 	bool					isTopicByOper() const;
+	bool					isSecret() const;
+	bool					isPrivate() const;
 	bool					isOperator(User &user) const;
 	bool 					inChannel(User user) const;
 	bool					isUserInvited(User &user) const;

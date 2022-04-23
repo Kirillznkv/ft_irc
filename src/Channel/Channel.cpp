@@ -87,6 +87,8 @@ bool Channel::isUserInvited(User &user) const {
 bool Channel::isInviteOnly() const { return _inviteOnly; }
 bool Channel::isPassword() const { return _hasPassword; }
 bool Channel::isTopicByOper() const { return _topicByOper; }
+bool Channel::isSecret() const { return _secret; }
+bool Channel::isPrivate() const { return _private; }
 std::string Channel::getChannelName() const { return _channelName; }
 std::string Channel::getChannelTopic() const { return _topic; }
 std::vector<User>& Channel::getOpers() { return _operators; }

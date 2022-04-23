@@ -30,17 +30,23 @@ void Server::start() {
 	User user(3);
 	user.setSocketFd(fd);
 	_users.push_back(user);
-	Channel channel("lol", user);
-	_channels.push_back(channel);
 	std::string req1 = "NICK kshanti";
 	std::string req2 = "PASS pass";
 	std::string req3 = "USER a a a a";
 	std::string req4 = "JOIN #kek";
+	std::string req5 = "JOIN #lol";
+	std::string req6 = "JOIN &myFirstChannel";
+	std::string req7 = "JOIN &mySecondChannel 123";
+	std::string req8 = "LIST";
 	unsigned int code = process(user, req1);
 	code = process(user, req2);
 	code = process(user, req3);
 	code = process(user, req2);
 	code = process(user, req4);
+	code = process(user, req5);
+	code = process(user, req6);
+	code = process(user, req7);
+	code = process(user, req8);
 	close(fd);
 }
 

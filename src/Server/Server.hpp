@@ -51,7 +51,7 @@ private:
 	void	joinCmd(User &user, std::vector<std::string> &args);// Done
 	void	kickCmd(User &user, std::vector<std::string> &args);// Done
 	void	killCmd(User &user, std::vector<std::string> &args);// Done
-	void	listCmd(User &user, std::vector<std::string> &args);
+	void	listCmd(User &user, std::vector<std::string> &args);// Done
 	void	modeCmd(User &user, std::vector<std::string> &args);
 	void	motdCmd(User &user);// Done
 	void	namesCmd(User &user, std::vector<std::string> &args);
