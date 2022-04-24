@@ -53,6 +53,8 @@ bool 		User::isAway() const { return _away; }
 bool 		User::isValidPass() const { return _validPass; }
 bool 		User::isRegistered() const { return _registered; }
 bool 		User::isInvisible() const { return _invisible; }
+bool 		User::isNotice() const { return _notice; }
+bool 		User::isWallops() const { return _wallops; }
 std::vector<Channel>	&User::getJoinedChannels() { return _joinedChannels; }
 
 ////////////////////////////////
@@ -70,4 +72,6 @@ void		User::setAway(bool flag) { _away = flag; }
 void		User::setValidPass(bool flag) { _validPass = flag; }
 void		User::setRegistered(bool flag) { _registered = flag; }
 void		User::setInvisible(bool flag) { _invisible = flag; }
+void		User::setNotice(bool flag) { _notice = flag; }
+void		User::setWallops(bool flag) { _wallops = flag; }
 void		User::setSocketFd(int fd) { _socketFd = fd; }

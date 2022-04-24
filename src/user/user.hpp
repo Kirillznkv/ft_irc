@@ -23,8 +23,8 @@ private:
 	// int     registerPhase;
 	bool		_away;
 	bool		_invisible;
-	// bool    serv_notices;
-	// bool    wallops;
+	bool		_notice;
+	bool		_wallops;
 	std::vector<Channel>	_joinedChannels;
 	static unsigned int		_amountUsers;
 public:
@@ -51,6 +51,8 @@ public:
 	bool 		isValidPass() const;
 	bool 		isRegistered() const;
 	bool 		isInvisible() const;
+	bool 		isNotice() const;
+	bool 		isWallops() const;
 	std::vector<Channel>	&getJoinedChannels();
 	////////////////////////////////
 	//----------Setters-----------//
@@ -67,6 +69,8 @@ public:
 	void		setValidPass(bool flag);
 	void		setRegistered(bool flag);
 	void		setInvisible(bool flag);
+	void		setNotice(bool flag);
+	void		setWallops(bool flag);
 	void		setSocketFd(int fd);
 };
 

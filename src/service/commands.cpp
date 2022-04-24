@@ -633,6 +633,51 @@ void Server::setChannelMode(User &user, std::vector<std::string> &args, Channel 
 	}
 }
 
+void Server::setUserModeInvisible(User &user, std::vector<std::string> &args) {
+	std::string response;
+	if (args[2][0] == '+') {
+		user.setInvisible(true);
+		response = "enabled";
+	} else {
+		user.setInvisible(false);
+		response = "disabled";
+	}
+	Server::sendP2PMsg(user, user, args[0] + user.getNickName() + "invisible mode is " + response);
+}
+
+void Server::setUserModeNoticed(User &user, std::vector<std::string> &args) {
+	std::string response;
+	if (args[2][0] == '+') {
+		user.setNotice(true);
+		response = "enabled";
+	} else {
+		user.setNotice(false);
+		response = "disabled";
+	}
+	Server::sendP2PMsg(user, user, args[0] + user.getNickName() + "reception_notices_from_server mode is " + response);
+}
+
+void Server::setUserModeWallops(User &user, std::vector<std::string> &args) {
+	std::string response;
+	if (args[2][0] == '+') {
+		user.setWallops(true);
+		response = "enabled";
+	} else {
+		user.setWallops(false);
+		response = "disabled";
+	}
+	Server::sendP2PMsg(user, user, args[0] + user.getNickName() + "reception_wallops mode is " + response);
+}
+
+void Server::setUserModeOperator(User &user, std::vector<std::string> &args) {
+	if (args[2][0] == '+')
+		Server::sendErrorResponse(472, user, "+o");
+	else {
+		user.setAdmin(false);
+		Server::sendP2PMsg(user, user, args[0] + user.getNickName() + "operator mode is disabled");
+	}
+}
+
 void Server::setUserMode(User &user, std::vector<std::string> &args) {
 	std::string reqFlags(args[2]);
 	for (size_t i = 1; i < reqFlags.length(); ++i) {
@@ -661,10 +706,10 @@ void Server::modeCmd(User &user, std::vector<std::string> &args) {
 	if (checkValideMode(user, args)) {
 		if (Channel::isChannelName(args[1])) {
 			//ChannelMode
-		}
-		else {
-			//UserMode
-		}
+		} else if (user.getNickName() == args[1])
+			setUserMode(user, args);
+		else
+			Server::sendErrorResponse(502, user);
 	}
 }
 
