@@ -581,6 +581,82 @@ bool Server::checkValideMode(User &user, std::vector<std::string> &args) {
 	return true;
 }
 
+void Server::setChannelMode(User &user, std::vector<std::string> &args, Channel &channel) {
+	std::string reqFlags(args[2]);
+	for (size_t i = 1; i < reqFlags.length(); ++i) {
+		switch (reqFlags[i]) {
+			case 'o': {
+				setChannelModeOperator(user, args, channel);
+				break;
+			}
+			case 'p': {
+				setChannelModePrivate(user, args, channel);
+				break;
+			}
+			case 's': {
+				setChannelModeSecret(user, args, channel);
+				break;
+			}
+			case 'i': {
+				setChannelModeInvite(user, args, channel);
+				break;
+			}
+			case 't': {
+				setChannelModeTopic(user, args, channel);
+				break;
+			}
+			case 'n': {
+				setChannelModeOutside(user, args, channel);
+				break;
+			}
+			case 'm': {
+				setChannelModeModerated(user, args, channel);
+				break;
+			}
+			case 'l': {
+				setChannelModeLimit(user, args, channel);
+				break;
+			}
+			case 'b': {
+				setChannelModeBan(user, args, channel);
+				break;
+			}
+			case 'v': {
+				setChannelModeVoice(user, args, channel);
+				break;
+			}
+			case 'k': {
+				setChannelModeKey(user, args, channel);
+				break;
+			}
+		}
+	}
+}
+
+void Server::setUserMode(User &user, std::vector<std::string> &args) {
+	std::string reqFlags(args[2]);
+	for (size_t i = 1; i < reqFlags.length(); ++i) {
+		switch (reqFlags[i]) {
+			case 'i': {
+				setUserModeInvisible(user, args);
+				break;
+			}
+			case 's': {
+				setUserModeNoticed(user, args);
+				break;
+			}
+			case 'w': {
+				setUserModeWallops(user, args);
+				break;
+			}
+			case 'o': {
+				setUserModeOperator(user, args);
+				break;
+			}
+		}
+	}
+}
+
 void Server::modeCmd(User &user, std::vector<std::string> &args) {
 	if (checkValideMode(user, args)) {
 		if (Channel::isChannelName(args[1])) {

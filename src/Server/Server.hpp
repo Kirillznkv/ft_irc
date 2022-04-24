@@ -69,24 +69,6 @@ private:
 	bool	statsCmd(User &user, std::vector<std::string> &args);////////////////////////
 	void	timeCmd(User &user, std::vector<std::string> &args);// Done
 	void	topicCmd(User &user, std::vector<std::string> &args);// Done
-	// bool	checkModeParams();
-	// void	setChnlMode();
-	// void	setUserMode();
-	// void	setChnlModeOperator();
-	// void	setChnlModePrivate();
-	// void	setChnlModeSecret();
-	// void	setChnlModeInvite();
-	// void	setChnlModeTopic();
-	// void	setChnlModeOutside();
-	// void	setChnlModeModerated();
-	// void	setChnlModeLimit();
-	// void	setChnlModeBan();
-	// void	setChnlModeVoice();
-	// void	setChnlModeKey();
-	// void	setUserModeInvisible();
-	// void	setUserModeNoticed();
-	// void	setUserModeWallops();
-	// void	setUserModeOperator();
 	int		userCmd(User &user, std::vector<std::string> &args);// Done
 	void	versionCmd(User &user, std::vector<std::string> &args);// Done
 	void	wallopsCmd(User &user, std::vector<std::string> &args);// Done
@@ -99,6 +81,23 @@ private:
 	//----------Utils-------------//
 	////////////////////////////////
 	bool						checkValideMode(User &user, std::vector<std::string> &args);
+	void						setChannelMode(User &user, std::vector<std::string> &args, Channel &channel);
+	void						setChannelModeOperator(User &user, std::vector<std::string> &args, Channel &channel);
+	void						setChannelModePrivate(User &user, std::vector<std::string> &args, Channel &channel);
+	void						setChannelModeSecret(User &user, std::vector<std::string> &args, Channel &channel);
+	void						setChannelModeInvite(User &user, std::vector<std::string> &args, Channel &channel);
+	void						setChannelModeTopic(User &user, std::vector<std::string> &args, Channel &channel);
+	void						setChannelModeOutside(User &user, std::vector<std::string> &args, Channel &channel);
+	void						setChannelModeModerated(User &user, std::vector<std::string> &args, Channel &channel);
+	void						setChannelModeLimit(User &user, std::vector<std::string> &args, Channel &channel);
+	void						setChannelModeBan(User &user, std::vector<std::string> &args, Channel &channel);
+	void						setChannelModeVoice(User &user, std::vector<std::string> &args, Channel &channel);
+	void						setChannelModeKey(User &user, std::vector<std::string> &args, Channel &channel);
+	void						setUserMode(User &user, std::vector<std::string> &args);
+	void						setUserModeInvisible(User &user, std::vector<std::string> &args);
+	void						setUserModeNoticed(User &user, std::vector<std::string> &args);
+	void						setUserModeWallops(User &user, std::vector<std::string> &args);
+	void						setUserModeOperator(User &user, std::vector<std::string> &args);
 	void						joinToChannel(User &user, std::string chName, std::string chPass);
 	void						createAndJoinToChannel(User &user, std::string chName, std::string chPass);
 	////////////////////////////////
