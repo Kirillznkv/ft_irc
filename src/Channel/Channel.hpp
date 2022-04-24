@@ -76,6 +76,7 @@ public:
 	void					setTopic(std::string topic);
 	void					resetPassword();
 	static bool				isChannelName(std::string chName);
+	static bool				isValidChannelName(std::string chName);
 };
 
 #endif

@@ -301,7 +301,7 @@ void Server::joinCmd(User &user, std::vector<std::string> &args) {
 		passwords = Utils::split(args[2], ',');
 	for (size_t i = 0; i < channels.size(); ++i){
 		std::string chName = channels[i], chPass = passwords[i];
-		if (Utils::isValidChannelName(chName) == false)
+		if (Channel::isValidChannelName(chName) == false)
 			Server::sendErrorResponse(403, user, chName);
 		else if (Utils::isChannelExist(_channels, chName))
 			joinToChannel(user, chName, chPass);

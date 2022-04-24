@@ -23,17 +23,6 @@ std::vector<std::string> Utils::split(const std::string& str, char delimeter) {
 	return args;
 }
 
-bool Utils::isValidChannelName(std::string chName) {
-	if (chName == "")
-		return false;
-	if (Channel::isChannelName(chName) == false)
-		return false;
-	for (size_t i = 1; i < chName.length(); i++)
-		if ((chName[i] < 'a' || chName[i] > 'z') && (chName[i] < 'A' || chName[i] > 'Z') && (chName[i] < '0' || chName[i] > '9') && chName[i] != '_')
-			return false;
-    return true;
-}
-
 bool Utils::isUserExist(const std::vector<User> &vec, std::string nickName) {
 	typedef std::vector<User>::const_iterator const_iter;
 	for (const_iter it = vec.cbegin(); it != vec.cend(); ++it) {
