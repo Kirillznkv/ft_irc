@@ -26,7 +26,7 @@ std::vector<std::string> Utils::split(const std::string& str, char delimeter) {
 bool Utils::isValidChannelName(std::string chName) {
 	if (chName == "")
 		return false;
-	if (chName[0] != '#' && chName[0] != '&')
+	if (Channel::isChannelName(chName) == false)
 		return false;
 	for (size_t i = 1; i < chName.length(); i++)
 		if ((chName[i] < 'a' || chName[i] > 'z') && (chName[i] < 'A' || chName[i] > 'Z') && (chName[i] < '0' || chName[i] > '9') && chName[i] != '_')

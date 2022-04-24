@@ -75,6 +75,7 @@ public:
 	void					setPassword(std::string pass);
 	void					setTopic(std::string topic);
 	void					resetPassword();
+	static bool				isChannelName(std::string chName);
 };
 
 #endif

@@ -529,9 +529,71 @@ void Server::partCmd(User &user, std::vector<std::string> &args) {
 	}
 }
 
+bool Server::checkValideMode(User &user, std::vector<std::string> &args) {
+	if (args.size() < 3) {
+		Server::sendErrorResponse(461, user, args[0]);
+		return false;
+	}
+	std::string name(args[1]), reqflags(args[2]);
+	if (reqflags[0] != '+' && reqflags[0] != '-') {
+		Server::sendErrorResponse(472, user, reqflags);
+		return false;
+	}
+	std::string channelFlags = "opsitnmlbvk", userFlags = "iswo", specialChannelFlags = "olv";
+	std::vector<bool> flags(256);
+	bool isSpecialFlags = false;
+	if (Channel::isChannelName(name)) {
+		for (size_t i = 1; i < reqflags.size(); ++i) {
+			if (channelFlags.find(reqflags[i]) == std::string::npos) {
+				Server::sendErrorResponse(472, user, std::string(1, args[2][i]));
+				return false;
+			}
+			if (flags[reqflags[i]] == true) {
+				Server::sendErrorResponse(501, user, args[0]);
+				return false;
+			}
+			flags[reqflags[i]] = true;
+			if (specialChannelFlags.find(reqflags[i]) != std::string::npos)
+				isSpecialFlags = true;
+		}
+		if (isSpecialFlags && reqflags.size() > 2) {
+			Server::sendErrorResponse(472, user, reqflags);
+			return false;
+		}
+		if (isSpecialFlags && (args.size() < 4 || args[3].empty())) {
+			Server::sendErrorResponse(461, user, args[0]);
+			return false;
+		}
+	}
+	else {
+		for (size_t i = 1; i < reqflags.size(); ++i) {
+			if (userFlags.find(reqflags[i]) == std::string::npos) {
+				Server::sendErrorResponse(472, user, std::string(1, args[2][i]));
+				return false;
+			}
+			if (flags[reqflags[i]] == true) {
+				Server::sendErrorResponse(501, user, args[0]);
+				return false;
+			}
+			flags[reqflags[i]] = true;
+		}
+	}
+	return true;
+}
+
+void Server::modeCmd(User &user, std::vector<std::string> &args) {
+	if (checkValideMode(user, args)) {
+		if (Channel::isChannelName(args[1])) {
+			//ChannelMode
+		}
+		else {
+			//UserMode
+		}
+	}
+}
+
 void	Server::dieCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }////////////////////////
 void	Server::errorCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }//////////////////////
-void	Server::modeCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
 void	Server::noticeCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
 void	Server::privMsgCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
 bool	Server::statsCmd(User &user, std::vector<std::string> &args) { user.getId(); args[1]; return false; }////////////////////////

@@ -150,3 +150,9 @@ void Channel::muteAll() {
 void Channel::unmuteAll() {
 	_voices.clear();
 }
+
+bool Channel::isChannelName(std::string chName) {
+	if (chName.front() == '#' || chName.front() == '&')
+		return true;
+	return false;
+}

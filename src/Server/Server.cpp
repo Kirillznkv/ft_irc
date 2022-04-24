@@ -61,6 +61,7 @@ void Server::start() {
 	std::cout<<"\nusers: ";
 	for (iter_user i = _users.begin(); i != _users.end(); ++i)
 		std::cout<<i->getNickName()<<" ";
+	std::cout<<std::endl;
 }
 
 void Server::killUser(User &user) { user.getHost(); }

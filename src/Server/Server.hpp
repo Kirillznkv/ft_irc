@@ -98,6 +98,7 @@ private:
 	////////////////////////////////
 	//----------Utils-------------//
 	////////////////////////////////
+	bool						checkValideMode(User &user, std::vector<std::string> &args);
 	void						joinToChannel(User &user, std::string chName, std::string chPass);
 	void						createAndJoinToChannel(User &user, std::string chName, std::string chPass);
 	////////////////////////////////
