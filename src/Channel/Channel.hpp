@@ -55,6 +55,8 @@ public:
 	bool					isTopicByOper() const;
 	bool					isSecret() const;
 	bool					isPrivate() const;
+	bool					isNotOutside() const;
+	bool					isModerated() const;
 	bool					isOperator(User &user) const;
 	bool 					inChannel(User user) const;
 	bool					isUserInvited(User &user) const;

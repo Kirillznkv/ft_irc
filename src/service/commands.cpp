@@ -909,10 +909,48 @@ void Server::modeCmd(User &user, std::vector<std::string> &args) {
 	}
 }
 
+void Server::privMsgCmd(User &user, std::vector<std::string> &args) {
+	if (args.size() == 1) {
+		Server::sendErrorResponse(411, user, args[0]);
+		return ;
+	}
+	if (args.size() == 2) {
+		Server::sendErrorResponse(412, user);
+		return ;
+	}
+	std::string massege(args[2]);
+	std::vector<std::string> names = Utils::split(args[1], ',');
+	for (iter_str itName = names.begin(); itName != names.end(); ++itName) {
+		if (Channel::isChannelName(*itName) == true) {
+			if (Utils::isChannelExist(_channels, *itName) == false) {
+				Server::sendErrorResponse(401, user, *itName);
+				return ;
+			}
+			iter_channel itChannel = Utils::findChannel(_channels, *itName);
+			if ((itChannel->isNotOutside() && itChannel->inChannel(user)) || \
+					(itChannel->isModerated() && Utils::isUserExist(itChannel->getVoices(), user.getNickName()) == false)) {
+				Server::sendErrorResponse(404, user, itChannel->getChannelName());
+				return ;
+			}
+			for (iter_user usr = itChannel->getUsers().begin(); usr != itChannel->getUsers().end(); ++usr) {
+				if (usr->getNickName() != user.getNickName())
+					Server::sendP2PMsg(user, *usr, args[0], itChannel->getChannelName(), massege);
+			}
+		} else if (Utils::isUserExist(_users, *itName) == true) {
+			iter_user usr = Utils::findUser(_users, *itName);
+			Server::sendP2PMsg(user, *usr, args[0], usr->getNickName(), massege);
+			if (usr->isAway())
+				Server::sendResponse(301, user, usr->getNickName(), usr->getAutoReply());
+		}
+	}
+}
+
+void Server::noticeCmd(User &user, std::vector<std::string> &args) {
+	privMsgCmd(user, args);
+}
+
 void	Server::dieCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }////////////////////////
 void	Server::errorCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }//////////////////////
-void	Server::noticeCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
-void	Server::privMsgCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }
 bool	Server::statsCmd(User &user, std::vector<std::string> &args) { user.getId(); args[1]; return false; }////////////////////////
 void	Server::whoCmd(User &user, std::vector<std::string> &args) { user.getId(); args[1]; }
 void	Server::whoisCmd(User &user, std::vector<std::string> &args) { user.getId(); args[1]; }

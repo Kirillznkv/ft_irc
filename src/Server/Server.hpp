@@ -56,13 +56,13 @@ private:
 	void	motdCmd(User &user);// Done
 	void	namesCmd(User &user, std::vector<std::string> &args);// Done
 	void	nickCmd(User &user, std::vector<std::string> &args);// Done
-	void	noticeCmd(User &user, std::vector<std::string> &args);
+	void	noticeCmd(User &user, std::vector<std::string> &args);// Done
 	void	operCmd(User &user, std::vector<std::string> &args);// Done
 	void	partCmd(User &user, std::vector<std::string> &args);// Done
 	void	passCmd(User &user, std::vector<std::string> &args);// Done
 	int		pingCmd(User &user, std::vector<std::string> &args);// Done
 	int		pongCmd(User &user, std::vector<std::string> &args);// Done
-	void	privMsgCmd(User &user, std::vector<std::string> &args);
+	void	privMsgCmd(User &user, std::vector<std::string> &args);// Done
 	void	quitCmd(User &user);// Done
 	void	rehashCmd(User &user);// Done
 	int		restartCmd(User &user);// Done

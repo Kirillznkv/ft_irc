@@ -89,6 +89,8 @@ bool Channel::isPassword() const { return _hasPassword; }
 bool Channel::isTopicByOper() const { return _topicByOper; }
 bool Channel::isSecret() const { return _secret; }
 bool Channel::isPrivate() const { return _private; }
+bool Channel::isNotOutside() const { return _noOutside; }
+bool Channel::isModerated() const { return _moderated; }
 std::string Channel::getChannelName() const { return _channelName; }
 std::string Channel::getChannelTopic() const { return _topic; }
 std::vector<User>& Channel::getOpers() { return _operators; }
