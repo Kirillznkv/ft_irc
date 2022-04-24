@@ -41,6 +41,9 @@ void Server::start() {
 	std::string req9 = "NAMES";
 	std::string req10 = "NAMES kshanti";
 	std::string req11 = "PART #lol,#kek";
+	std::string r1 = "OPER kshanti 123";
+	std::string r2 = "MODE #kek +p";
+	std::string r3 = "MODE #kek -p";
 	unsigned int code = process(_users[0], req1);
 	code = process(_users[0], req2);
 	code = process(_users[0], req3);
@@ -50,6 +53,9 @@ void Server::start() {
 	code = process(_users[0], req6);
 	code = process(_users[0], req7);
 	code = process(_users[0], req8);
+	code = process(_users[0], r1);
+	code = process(_users[0], r2);
+	code = process(_users[0], r3);
 	code = process(_users[0], req9);
 	code = process(_users[0], req10);
 	code = process(_users[0], req11);

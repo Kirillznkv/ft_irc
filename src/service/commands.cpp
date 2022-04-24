@@ -539,7 +539,7 @@ bool Server::checkValideMode(User &user, std::vector<std::string> &args) {
 		Server::sendErrorResponse(472, user, reqflags);
 		return false;
 	}
-	std::string channelFlags = "opsitnmlbvk", userFlags = "iswo", specialChannelFlags = "olv";
+	std::string channelFlags = "opsitnmlbvk", userFlags = "iswo", specialChannelFlags = "olvb";
 	std::vector<bool> flags(256);
 	bool isSpecialFlags = false;
 	if (Channel::isChannelName(name)) {
@@ -580,6 +580,194 @@ bool Server::checkValideMode(User &user, std::vector<std::string> &args) {
 	}
 	return true;
 }
+
+void Server::setChannelModeOperator(User &user, std::vector<std::string> &args, Channel &channel) {
+	std::string userToOperName(args[3]);
+	if (Utils::isUserExist(_users, userToOperName) == false) {
+		Server::sendErrorResponse(401, user, userToOperName);
+		return ;
+	}
+	iter_user itUserToOper = Utils::findUser(_users, userToOperName);
+	if (Utils::isUserExist(channel.getUsers(), userToOperName) == false) {
+		Server::sendErrorResponse(441, user, userToOperName, channel.getChannelName());
+		return ;
+	}
+	bool isOper = Utils::isUserExist(channel.getOpers(), userToOperName);
+	if (isOper == true && args[2][0] == '+') {
+		Server::sendErrorResponse(221, user, userToOperName + " is already operator");
+		return ;
+	} else if (isOper == false && args[2][0] == '-') {
+		Server::sendErrorResponse(221, user, userToOperName + " is already not an operator on");
+		return ;
+	}
+	if (args[2][0] == '+') {
+		channel.addOperator(*itUserToOper);
+		channel.sendToAll(user, args[1], " is operator now");
+	} else {
+		channel.deleteOperator(*itUserToOper);
+		channel.sendToAll(user, args[1], " removed from operator list");
+	}
+}
+
+void Server::setChannelModePrivate(User &user, std::vector<std::string> &args, Channel &channel) {
+	std::string response;
+	if (args[2][0] == '+') {
+		response = "enabled";
+		channel.setPrivateFlag(true);
+	} else {
+		response = "disabled";
+		channel.setPrivateFlag(false);
+	}
+	channel.sendToAll(user, args[1], "private channel is " + response);
+}
+
+void Server::setChannelModeSecret(User &user, std::vector<std::string> &args, Channel &channel) {
+	std::string response;
+	if (args[2][0] == '+') {
+		response = "enabled";
+		channel.setSecretFlag(true);
+	} else {
+		response = "disabled";
+		channel.setSecretFlag(false);
+	}
+	channel.sendToAll(user, args[1], "secret channel is " + response);
+}
+
+void Server::setChannelModeInvite(User &user, std::vector<std::string> &args, Channel &channel) {
+	std::string response;
+	if (args[2][0] == '+') {
+		response = "enabled";
+		channel.setInviteFlag(true);
+	} else {
+		response = "disabled";
+		channel.setInviteFlag(false);
+	}
+	channel.sendToAll(user, args[1], "invite only is " + response);
+}
+
+void Server::setChannelModeTopic(User &user, std::vector<std::string> &args, Channel &channel) {
+	std::string response;
+	if (args[2][0] == '+') {
+		response = "enabled";
+		channel.setTopicFlag(true);
+	} else {
+		response = "disabled";
+		channel.setTopicFlag(false);
+	}
+	channel.sendToAll(user, args[1], "topic set by operator is " + response);
+}
+
+void Server::setChannelModeOutside(User &user, std::vector<std::string> &args, Channel &channel) {
+	std::string response;
+	if (args[2][0] == '+') {
+		response = "enabled";
+		channel.setOutsideFlag(true);
+	} else {
+		response = "disabled";
+		channel.setOutsideFlag(false);
+	}
+	channel.sendToAll(user, args[1], "messages from only channel clients is " + response);
+}
+
+void Server::setChannelModeModerated(User &user, std::vector<std::string> &args, Channel &channel) {
+	std::string response;
+	if (args[2][0] == '+') {
+		response = "enabled";
+		channel.setModeratedFlag(true);
+	} else {
+		response = "disabled";
+		channel.setModeratedFlag(false);
+	}
+	channel.sendToAll(user, args[1], "read only channel mode is " + response);
+}
+
+void Server::setChannelModeLimit(User &user, std::vector<std::string> &args, Channel &channel) {
+	try {
+		int limit = std::stoi(args[3]);
+		if (limit <= 0) {
+			Server::sendErrorResponse(501, user, args[3]);
+			return ;
+		}
+		channel.setUserLimit(limit);
+		channel.sendToAll(user, args[1], "user limit is " + args[3] + " now");
+	} catch (std::exception &e) {
+		Server::sendErrorResponse(501, user, args[3]);
+	}
+}
+
+void Server::setChannelModeBan(User &user, std::vector<std::string> &args, Channel &channel) {
+	std::string userToBanName(args[3]);
+	if (Utils::isUserExist(_users, userToBanName) == false) {
+		Server::sendErrorResponse(401, user, userToBanName);
+		return ;
+	}
+	iter_user itUserToBan = Utils::findUser(_users, userToBanName);
+	if (Utils::isUserExist(channel.getUsers(), userToBanName) == false) {
+		Server::sendErrorResponse(441, user, userToBanName, channel.getChannelName());
+		return ;
+	}
+	bool isBanned = Utils::isUserExist(channel.getBanList(), userToBanName);
+	if (isBanned == true && args[2][0] == '+') {
+		Server::sendErrorResponse(221, user, userToBanName + " is already banned on");
+		return ;
+	} else if (isBanned == false && args[2][0] == '-') {
+		Server::sendErrorResponse(221, user, userToBanName + " is already unbanned on");
+		return ;
+	}
+	if (args[2][0] == '+') {
+		channel.addUserToBanList(*itUserToBan);
+		channel.sendToAll(user, args[1], " has been banned");
+	} else {
+		channel.getBanList().erase(itUserToBan);
+		channel.sendToAll(user, args[1], " has been unbanned");
+	}
+}
+
+void Server::setChannelModeVoice(User &user, std::vector<std::string> &args, Channel &channel) {
+	std::string userToVoiceName(args[3]);
+	if (Utils::isUserExist(_users, userToVoiceName) == false) {
+		Server::sendErrorResponse(401, user, userToVoiceName);
+		return ;
+	}
+	iter_user itUserToVoice = Utils::findUser(_users, userToVoiceName);
+	if (Utils::isUserExist(channel.getUsers(), userToVoiceName) == false) {
+		Server::sendErrorResponse(441, user, userToVoiceName, channel.getChannelName());
+		return ;
+	}
+	bool isVoice = Utils::isUserExist(channel.getVoices(), userToVoiceName);
+	if (isVoice == true && args[2][0] == '+') {
+		Server::sendErrorResponse(221, user, userToVoiceName + " is already has voice");
+		return ;
+	} else if (isVoice == false && args[2][0] == '-') {
+		Server::sendErrorResponse(221, user, userToVoiceName + " is already no voice");
+		return ;
+	}
+	if (args[2][0] == '+') {
+		channel.addUserToVoiceList(*itUserToVoice);
+		channel.sendToAll(user, args[1], " has voice now");
+	} else {
+		channel.getVoices().erase(itUserToVoice);
+		channel.sendToAll(user, args[1], " has been muted");
+	}
+}
+
+void Server::setChannelModeKey(User &user, std::vector<std::string> &args, Channel &channel) {
+	if (args[2][0] == '+') {
+		if (args.size() > 3) {
+			if (channel.isPassword() == true)
+				Server::sendErrorResponse(467, user, channel.getChannelName());
+			else {
+				channel.setPassword(args[3]);
+				channel.sendToAll(user, args[1], "channel has been protected with key: " + args[3]);
+			}
+		} else
+			Server::sendErrorResponse(472, user, args[2]);
+	} else {
+		channel.resetPassword();
+		channel.sendToAll(user, args[1], "channel key has been removed");
+	}
+}
+
 
 void Server::setChannelMode(User &user, std::vector<std::string> &args, Channel &channel) {
 	std::string reqFlags(args[2]);
@@ -705,7 +893,15 @@ void Server::setUserMode(User &user, std::vector<std::string> &args) {
 void Server::modeCmd(User &user, std::vector<std::string> &args) {
 	if (checkValideMode(user, args)) {
 		if (Channel::isChannelName(args[1])) {
-			//ChannelMode
+			if (Utils::isChannelExist(_channels, args[1]) == false)
+				Server::sendErrorResponse(403, user, args[1]);
+			else {
+				iter_channel itChannel = Utils::findChannel(_channels, args[1]);
+				if (Utils::isUserExist(itChannel->getOpers(), user.getNickName()) == false)
+					Server::sendErrorResponse(482, user, args[1]);
+				else
+					setChannelMode(user, args, *itChannel);
+			}
 		} else if (user.getNickName() == args[1])
 			setUserMode(user, args);
 		else
