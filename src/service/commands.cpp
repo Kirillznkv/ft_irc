@@ -674,11 +674,9 @@ void Server::setChannelModeModerated(User &user, std::vector<std::string> &args,
 	if (args[2][0] == '+') {
 		response = "enabled";
 		channel.setModeratedFlag(true);
-		channel.muteAll();
 	} else {
 		response = "disabled";
 		channel.setModeratedFlag(false);
-		channel.unmuteAll();
 	}
 	channel.sendToAll(user, args[1], "read only channel mode is " + response);
 }
@@ -929,8 +927,9 @@ void Server::privMsgCmd(User &user, std::vector<std::string> &args) {
 				return ;
 			}
 			iter_channel itChannel = Utils::findChannel(_channels, *itName);
-			if ((itChannel->isNotOutside() && itChannel->inChannel(user)) || \
-					(itChannel->isModerated() && Utils::isUserExist(itChannel->getVoices(), user.getNickName()) == false)) {
+			if ((itChannel->isNotOutside() && itChannel->inChannel(user) == false) || \
+					(itChannel->isModerated() && Utils::isUserExist(itChannel->getVoices(), user.getNickName()) == false && \
+					Utils::isUserExist(itChannel->getOpers(), user.getNickName()) == false)) {
 				Server::sendErrorResponse(404, user, itChannel->getChannelName());
 				return ;
 			}

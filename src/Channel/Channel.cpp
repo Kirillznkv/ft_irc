@@ -145,14 +145,6 @@ void Channel::sendToAll(User &sender, std::string channelName, std::string msg) 
 		Server::send(it->getSocketFd(), prefix + msg + "\n");
 }
 
-void Channel::muteAll() {
-	for (iter it = _users.begin(); it != _users.end(); ++it)
-		addUserToVoiceList(*it);
-}
-void Channel::unmuteAll() {
-	_voices.clear();
-}
-
 bool Channel::isChannelName(std::string chName) {
 	if (chName.front() == '#' || chName.front() == '&')
 		return true;

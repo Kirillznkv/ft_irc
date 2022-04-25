@@ -46,9 +46,6 @@ public:
 	void					deleteUser(User &user);
 	void					deleteOperator(User &user);
 	void					sendToAll(User &sender, std::string channelName, std::string msg);
-	void					muteAll();
-	void					unmuteAll();
-	// Отказался от бана всех кроме находящихся (banAllNonMember)
 
 	bool					isInviteOnly() const;
 	bool					isPassword() const;
