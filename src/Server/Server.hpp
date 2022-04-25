@@ -71,8 +71,6 @@ private:
 	////////////////////////////////
 	void	adminCmd(User &user, std::vector<std::string> &args);// Done
 	void	awayCmd(User &user, std::vector<std::string> &args);// Done
-	void	dieCmd(User &user, std::vector<std::string> &args);////////////////////////
-	void	errorCmd(User &user, std::vector<std::string> &args);//////////////////////
 	void	infoCmd(User &user, std::vector<std::string> &args);// Done
 	void	inviteCmd(User &user, std::vector<std::string> &args);// Done
 	void	isonCmd(User &user, std::vector<std::string> &args);// Done
@@ -94,15 +92,14 @@ private:
 	void	quitCmd(User &user);// Done
 	void	rehashCmd(User &user);// Done
 	int		restartCmd(User &user);// Done
-	bool	statsCmd(User &user, std::vector<std::string> &args);////////////////////////
 	void	timeCmd(User &user, std::vector<std::string> &args);// Done
 	void	topicCmd(User &user, std::vector<std::string> &args);// Done
 	int		userCmd(User &user, std::vector<std::string> &args);// Done
 	void	versionCmd(User &user, std::vector<std::string> &args);// Done
 	void	wallopsCmd(User &user, std::vector<std::string> &args);// Done
-	void	whoCmd(User &user, std::vector<std::string> &args);
+	void	whoCmd(User &user, std::vector<std::string> &args);// Done
 	void	whoisCmd(User &user, std::vector<std::string> &args);// Done
-	void	whoWasCmd(User &user, std::vector<std::string> &args);
+	void	whoWasCmd(User &user, std::vector<std::string> &args);// Done
 	unsigned int 	chooseCommand(User &user, std::vector<std::string> &args);
 	unsigned int	process(User &user, std::string req);
 	////////////////////////////////

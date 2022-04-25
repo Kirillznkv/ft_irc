@@ -1025,7 +1025,3 @@ void Server::whoCmd(User &user, std::vector<std::string> &args) {
 		Server::sendResponse(315, user, args[1]);
 	}
 }
-
-void	Server::dieCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }////////////////////////
-void	Server::errorCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }//////////////////////
-bool	Server::statsCmd(User &user, std::vector<std::string> &args) { user.getId(); args[1]; return false; }////////////////////////
