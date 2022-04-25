@@ -73,7 +73,7 @@ private:
 	void	versionCmd(User &user, std::vector<std::string> &args);// Done
 	void	wallopsCmd(User &user, std::vector<std::string> &args);// Done
 	void	whoCmd(User &user, std::vector<std::string> &args);
-	void	whoisCmd(User &user, std::vector<std::string> &args);
+	void	whoisCmd(User &user, std::vector<std::string> &args);// Done
 	void	whoWasCmd(User &user, std::vector<std::string> &args);
 	unsigned int 	chooseCommand(User &user, std::vector<std::string> &args);
 	unsigned int	process(User &user, std::string req);
@@ -100,6 +100,7 @@ private:
 	void						setUserModeOperator(User &user, std::vector<std::string> &args);
 	void						joinToChannel(User &user, std::string chName, std::string chPass);
 	void						createAndJoinToChannel(User &user, std::string chName, std::string chPass);
+	std::vector<User>			strToUsers(const std::string& str, User &usrWhoAsk);
 	////////////////////////////////
 	//----------Service-----------//
 	////////////////////////////////

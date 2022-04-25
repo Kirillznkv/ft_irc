@@ -68,3 +68,44 @@ std::string Utils::getUsers(Channel &channel) {
 		result.pop_back();
 	return result;
 }
+
+std::string Utils::getFlags(Channel &channel) {
+	std::string res;
+	if (channel.isInviteOnly())
+		res += 'i';
+	if (channel.isModerated())
+		res += 'm';
+	if (channel.isTopicByOper())
+		res += 't';
+	if (channel.isNotOutside())
+		res += 'n';
+	if (channel.isPrivate())
+		res += 'p';
+	if (channel.isPassword())
+		res += 'k';
+	if (res.size() > 0)
+		res = "[+" + res + "]";
+	return res;
+}
+
+std::string Utils::getChannels(User &userWhoAsk, User &user) {
+	typedef std::vector<Channel>::iterator iter;
+	std::string res;
+	for (iter itChannel = user.getJoinedChannels().begin(); itChannel != user.getJoinedChannels().end(); ++itChannel) {
+		if (itChannel->isSecret() == false) {
+			if (itChannel->isPrivate() == false || itChannel->inChannel(userWhoAsk)) {
+				if (Utils::isUserExist(itChannel->getOpers(), user.getNickName()))
+					res += "[@]";
+				res += Utils::getFlags(*itChannel) + itChannel->getChannelName() + ' ';
+			} else
+				res += "Prv ";
+		} else if (itChannel->inChannel(userWhoAsk)) {
+			if (Utils::isUserExist(itChannel->getOpers(), user.getNickName()))
+				res += "[@]";
+			res += Utils::getFlags(*itChannel) + itChannel->getChannelName() + ' ';
+		}
+	}
+	if (res.empty() == false)
+		res.pop_back();
+	return res;
+}

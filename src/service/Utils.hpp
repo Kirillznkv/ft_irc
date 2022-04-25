@@ -17,6 +17,8 @@ public:
 	static std::vector<User>::iterator		findUser(std::vector<User> &vec, std::string nickName);
 	static std::vector<Channel>::iterator	findChannel(std::vector<Channel> &vec, std::string chName);
 	static std::string						getUsers(Channel &channel);
+	static std::string						getChannels(User &userWhoAsk, User &user);
+	static std::string						getFlags(Channel &channel);
 };
 
 #endif

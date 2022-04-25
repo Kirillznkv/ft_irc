@@ -950,9 +950,46 @@ void Server::noticeCmd(User &user, std::vector<std::string> &args) {
 	privMsgCmd(user, args);
 }
 
+std::vector<User> Server::strToUsers(const std::string& str, User &usrWhoAsk) {
+	std::vector<User> res;
+	std::vector<std::string> users = Utils::split(str, ',');
+	for (size_t i = 0; i < users.size(); ++i) {
+		std::string usr = users[i];
+		if (Utils::isUserExist(_users, usr) == true) {
+			std::vector<User>::iterator itUsr = Utils::findUser(_users, usr);
+			if (itUsr->isInvisible() == false || usr == usrWhoAsk.getNickName())
+				res.push_back(*itUsr);
+		} else
+			Server::sendErrorResponse(401, usrWhoAsk, usr);
+	}
+	return res;
+}
+
+
+void Server::whoisCmd(User &user, std::vector<std::string> &args) {
+	if (args.size() == 1) {
+		Server::sendErrorResponse(431, user);
+		return ;
+	}
+	std::vector<User> users = strToUsers(args[1], user);
+	for (iter_user usr = users.begin(); usr != users.end(); ++usr) {
+		// uint64_t afk = (Service::timer() - Server::rr_data[it->getId()].last_message_time) / 1000;
+		uint64_t afk = 42;
+		Server::sendResponse(311, user, usr->getNickName(), usr->getUserName(), usr->getRealHost(), usr->getRealName());
+		if (usr->isAway())
+			Server::sendResponse(301, user, usr->getNickName(), usr->getAutoReply());
+		if (usr->isAdmin())
+			Server::sendResponse(313, user, usr->getNickName());
+		Server::sendResponse(317, user, usr->getNickName(), std::to_string(afk));
+		std::string channels = Utils::getChannels(user, *usr);
+		if (channels.empty() == false)
+			Server::sendResponse(319, user, usr->getNickName(), channels);
+		Server::sendResponse(318, user, usr->getNickName());
+	}
+}
+
 void	Server::dieCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }////////////////////////
 void	Server::errorCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }//////////////////////
 bool	Server::statsCmd(User &user, std::vector<std::string> &args) { user.getId(); args[1]; return false; }////////////////////////
 void	Server::whoCmd(User &user, std::vector<std::string> &args) { user.getId(); args[1]; }
-void	Server::whoisCmd(User &user, std::vector<std::string> &args) { user.getId(); args[1]; }
 void	Server::whoWasCmd(User &user, std::vector<std::string> &args) { user.getId(); args[1]; }
