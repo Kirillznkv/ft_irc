@@ -674,9 +674,11 @@ void Server::setChannelModeModerated(User &user, std::vector<std::string> &args,
 	if (args[2][0] == '+') {
 		response = "enabled";
 		channel.setModeratedFlag(true);
+		channel.muteAll();
 	} else {
 		response = "disabled";
 		channel.setModeratedFlag(false);
+		channel.unmuteAll();
 	}
 	channel.sendToAll(user, args[1], "read only channel mode is " + response);
 }
