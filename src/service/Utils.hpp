@@ -19,6 +19,7 @@ public:
 	static std::string						getUsers(Channel &channel);
 	static std::string						getChannels(User &userWhoAsk, User &user);
 	static std::string						getFlags(Channel &channel);
+	static std::string						getLastChannel(User &user);
 };
 
 #endif

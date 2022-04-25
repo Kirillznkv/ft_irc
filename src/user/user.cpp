@@ -25,11 +25,17 @@ User &User::operator=(const User &op) {
 		_userName = op.getUserName();
 		_realName = op.getRealName();
 		_host = op.getHost();
+		_realHost = op.getRealHost();
+		_serverName = op.getServerName();
+		_autoReply = op.getAutoReply();
 		_validPass = op.isValidPass();
 		_registered = op.isRegistered();
 		_admin = op.isAdmin();
 		_away = op.isAway();
 		_invisible = op.isInvisible();
+		_notice = op.isNotice();
+		_wallops = op.isWallops();
+		_joinedChannels = op.getJoinedChannels();
 	}
 	return *this;
 }
@@ -56,6 +62,7 @@ bool 		User::isInvisible() const { return _invisible; }
 bool 		User::isNotice() const { return _notice; }
 bool 		User::isWallops() const { return _wallops; }
 std::vector<Channel>	&User::getJoinedChannels() { return _joinedChannels; }
+std::vector<Channel>	User::getJoinedChannels() const{ return _joinedChannels; }
 
 ////////////////////////////////
 //----------Setters-----------//

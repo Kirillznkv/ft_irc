@@ -109,3 +109,15 @@ std::string Utils::getChannels(User &userWhoAsk, User &user) {
 		res.pop_back();
 	return res;
 }
+
+std::string Utils::getLastChannel(User &user) {
+	std::vector<Channel> channels = user.getJoinedChannels();
+	if (channels.size() == 0)
+		return "*no joined channels*";
+	Channel channel = channels[channels.size() - 1];
+	if (channel.isSecret())
+		return "Scr";
+	if (channel.isPrivate())
+		return "Prv";
+	return channel.getChannelName();
+}

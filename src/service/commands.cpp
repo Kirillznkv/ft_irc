@@ -1006,7 +1006,26 @@ void Server::whoWasCmd(User &user, std::vector<std::string> &args) {
 	Server::sendResponse(369, user, args[1]);
 }
 
+
+void Server::whoCmd(User &user, std::vector<std::string> &args) {
+	bool operatorFlag = false;
+	if (args.size() > 2 && args[2] == "o")
+		operatorFlag = true;
+	if (args.size() == 1 || (args.size() > 1 && args[1] == "0")) {
+		for (iter_user it = _users.begin(); it != _users.end(); it++) {
+			if ((it->isInvisible() == false || it->getNickName() == user.getNickName()) && (operatorFlag == false || it->isAdmin()))
+				Server::sendResponse(352, user, Utils::getLastChannel(*it), it->getUserName(), it->getRealHost(), it->getServerName(), it->getNickName(), std::to_string(0), it->getRealName());
+		}
+	} else {
+		std::vector<User> users = strToUsers(args[1], user);
+		for (iter_user it = users.begin(); it != users.end(); it++) {
+			if ((it->isInvisible() == false || it->getNickName() == user.getNickName()) && (operatorFlag == false || it->isAdmin()))
+				Server::sendResponse(352, user, Utils::getLastChannel(*it), it->getUserName(), it->getRealHost(), it->getServerName(), it->getNickName(), std::to_string(0), it->getRealName());
+		}
+		Server::sendResponse(315, user, args[1]);
+	}
+}
+
 void	Server::dieCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }////////////////////////
 void	Server::errorCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }//////////////////////
 bool	Server::statsCmd(User &user, std::vector<std::string> &args) { user.getId(); args[1]; return false; }////////////////////////
-void	Server::whoCmd(User &user, std::vector<std::string> &args) { user.getId(); args[1]; }

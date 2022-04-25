@@ -20,7 +20,6 @@ private:
 	bool		_validPass;
 	bool		_registered;
 	bool		_admin;
-	// int     registerPhase;
 	bool		_away;
 	bool		_invisible;
 	bool		_notice;
@@ -54,6 +53,7 @@ public:
 	bool 		isNotice() const;
 	bool 		isWallops() const;
 	std::vector<Channel>	&getJoinedChannels();
+	std::vector<Channel>	getJoinedChannels() const;
 	////////////////////////////////
 	//----------Setters-----------//
 	////////////////////////////////

@@ -44,6 +44,8 @@ void Server::start() {
 	std::string r1 = "OPER kshanti 123";
 	std::string r2 = "MODE #kek +p";
 	std::string r3 = "MODE #kek -p";
+	std::string r4 = "WHO kshanti";
+	std::string r5 = "WHOIS kshanti";
 	unsigned int code = process(_users[0], req1);
 	code = process(_users[0], req2);
 	code = process(_users[0], req3);
@@ -60,6 +62,8 @@ void Server::start() {
 	code = process(_users[0], req10);
 	code = process(_users[0], req11);
 	code = process(_users[0], req8);
+	code = process(_users[0], r4);
+	code = process(_users[0], r5);
 	close(fd);
 	std::cout<<"\nchannels: ";
 	for (iter_channel i = _channels.begin(); i != _channels.end(); ++i)
