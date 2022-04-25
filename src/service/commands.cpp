@@ -988,8 +988,25 @@ void Server::whoisCmd(User &user, std::vector<std::string> &args) {
 	}
 }
 
+void Server::whoWasCmd(User &user, std::vector<std::string> &args) {
+	if (args.size() == 1) {
+		Server::sendErrorResponse(431, user);
+		return;
+	}
+	std::vector<std::string> users = Utils::split(args[1], ',');
+	for (size_t i = 0; i < users.size(); ++i) {
+		iter_user usr = _usersHistory.begin();
+		while (usr != _usersHistory.end() && usr->getNickName() != users[i])
+			++usr;
+		if (usr == _usersHistory.end())
+			Server::sendErrorResponse(406, user, users[i]);
+		else
+			Server::sendResponse(314, user, usr->getNickName(), usr->getUserName(), usr->getRealHost(), usr->getRealName());
+	}
+	Server::sendResponse(369, user, args[1]);
+}
+
 void	Server::dieCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }////////////////////////
 void	Server::errorCmd(User &user, std::vector<std::string> &args) { user.getId(); args[0]; }//////////////////////
 bool	Server::statsCmd(User &user, std::vector<std::string> &args) { user.getId(); args[1]; return false; }////////////////////////
 void	Server::whoCmd(User &user, std::vector<std::string> &args) { user.getId(); args[1]; }
-void	Server::whoWasCmd(User &user, std::vector<std::string> &args) { user.getId(); args[1]; }

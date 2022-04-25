@@ -28,6 +28,7 @@ private:
     unsigned long               _ipAddr;
 	std::string					_pass;
 	std::vector<User>			_users;
+	std::vector<User>			_usersHistory;
 	std::vector<Channel>		_channels;
 	Config						_conf;
 public:
