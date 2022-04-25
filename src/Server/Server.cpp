@@ -1,80 +1,144 @@
 #include "Server.hpp"
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
+PingData::PingData() : lastMessageTime(-1), isOnline(true) {
+	pthread_mutex_init(&(this->printMutex), NULL);
+}
+PingData::~PingData(){
+	pthread_mutex_destroy(&(this->printMutex));
+}
 
-Server::Server(unsigned short int port, std::string pass) : _port(port), _pass(pass) {} //todo: create object with port already
+Server::Server(unsigned short int port, std::string pass) : _port(port), _pass(pass) {
+	if (_port < 1024 || _port > 49151)
+		throw "Wrong port!";
+	init(_port, _pass);
+	std::cout << "Server will be bound to port: " << _port << std::endl;
+}
 
 Server::~Server() {}
 
+void Server::init(unsigned short int port, std::string pass) {
+	if (_conf.ok() == false)
+		throw "Config is not valid";
+	_requestTimeout = atoi(_conf["requestTimeout"].c_str()) * 1000;
+	_responseTimeout = atoi(_conf["responseTimeout"].c_str()) * 1000;
+	_maxClients = atoi(_conf["maxConnections"].c_str());
+	if (_maxClients < 1 || _requestTimeout < 1 || _responseTimeout < 1)
+		throw "Config is not valid";
+	_pingData.reserve(_maxClients);
+	std::cout << "Server initialized" << std::endl;
+}
 
-void    Server::createConnection() {
+bool Server::settingUpSocket() {
+	int iOptVal;
+	_socketFd = socket(AF_INET, SOCK_STREAM, 0);
+	if (_socketFd < 0) {
+		std::cerr<<"Error opening socket"<<std::endl;
+		return false;
+	}
+	if (setsockopt(_socketFd, SOL_SOCKET, SO_REUSEADDR, &iOptVal, sizeof(int)) == -1) {
+		std::cerr<<"Error setting socket options"<<std::endl;
+		return false;
+	}
+	sockaddr_in serverAddr;
+	bzero((char *) &serverAddr, sizeof(serverAddr));
+	serverAddr.sin_family = AF_INET;
+	serverAddr.sin_addr.s_addr = INADDR_ANY;
+	serverAddr.sin_port = htons(_port);
+	if (bind(_socketFd, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) < 0) {
+		std::cerr<<"Error setting socket options"<<std::endl;
+		return false;
+	}
+	std::cout<<"Server is listening to "<<_port<<std::endl;
+	listen(_socketFd, _maxClients);
+	fcntl(_socketFd, F_SETFL, O_NONBLOCK);
+}
 
-    // if ((fd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
-    //     std::cout << "Error: socket\n";
-    // struct sockaddr_in addr;
-    // addr.sin_family = AF_UNIX;
-    // addr.sin_port = port; //INNADDR_ANY??
-    // addr.sin_addr = htons(ipAddr);
-    // bind()
+void Server::newUserConnect() {
+	std::string port = accepting();
+	if (port.empty())
+		return ;
+	fcntl(_newSocketFd, F_SETFL, O_NONBLOCK);
+	User user(_newSocketFd);
+	user.setRealHost(port);
+	_pingData[user.getId()].socket = _newSocketFd;
+	_users.push_back(user);
+}
+
+void Server::execRequest(User &user, std::string buf) {
+	if (buf.find('\n') == std::string::npos)
+		return ;
+	if (user.isRegistered() && _pingData[user.getId()].responseWaiting == false)
+		_pingData[user.getId()].restartRequest = true;
+	std::vector<std::string> requests = Utils::split(buf, '\n');
+	for (iter_str it = requests.begin(); it != requests.end(); ++it) {
+		unsigned int code = process(user, *it);
+		if (code == 3)
+			;
+		else if (code == 7)
+			;
+		else if (code == 8)
+			;
+	}
+}
+
+std::string Server::accepting() {
+	sockaddr_in clientAddr;
+	socklen_t clientLen = sizeof(clientAddr);
+	_newSocketFd = accept(_socketFd, (sockaddr *) &clientAddr, &clientLen);
+	if (_newSocketFd < 0) {
+		std::cerr<<"Error on accepting the connection"<<std::endl;
+		return "";
+	}
+	std::cout<<"New Client Connected, ip: " << inet_ntoa(clientAddr.sin_addr)
+			<<", port: " << ntohs(clientAddr.sin_port)<<std::endl;
+	return inet_ntoa(clientAddr.sin_addr);
+}
+
+void Server::readSocket() {
+	for (iter_user usr = _users.begin(); usr != _users.end(); ++usr)
+		if (FD_ISSET(usr->getSocketFd(), &_fdRead)) {
+			char buf[512];
+			bzero(&buf, 512);
+			if (recv(_socketFd, &buf, 512, 0) < 0) {
+				std::cerr<<"Error reading from socket"<<std::endl;
+				killUser(*usr);
+			}
+			else
+				execRequest(*usr, buf);
+			break ;
+		}
 }
 
 void Server::start() {
-	int fd = open("output.txt", O_RDWR | O_CREAT | O_TRUNC, 0777);
-	if (_conf.ok() == false) { // проверка везде
-		std::cout<< "Error: Fail config file\n";
+	if (settingUpSocket() == false) {
+		std::cerr<<"Error on binding to port"<<std::endl;
 		return ;
 	}
-	User user(3);
-	user.setSocketFd(fd);
-	_users.push_back(user);
-	std::string req1 = "NICK kshanti";
-	std::string req2 = "PASS pass";
-	std::string req3 = "USER a a a a";
-	std::string req4 = "JOIN #kek";
-	std::string req5 = "JOIN #lol";
-	std::string req6 = "JOIN &myFirstChannel";
-	std::string req7 = "JOIN &mySecondChannel 123";
-	std::string req8 = "LIST";
-	std::string req9 = "NAMES";
-	std::string req10 = "NAMES kshanti";
-	std::string req11 = "PART #lol,#kek";
-	std::string r1 = "OPER kshanti 123";
-	std::string r2 = "MODE #kek +p";
-	std::string r3 = "MODE #kek -p";
-	std::string r4 = "WHO kshanti";
-	std::string r5 = "WHOIS kshanti";
-	unsigned int code = process(_users[0], req1);
-	code = process(_users[0], req2);
-	code = process(_users[0], req3);
-	code = process(_users[0], req2);
-	code = process(_users[0], req4);
-	code = process(_users[0], req5);
-	code = process(_users[0], req6);
-	code = process(_users[0], req7);
-	code = process(_users[0], req8);
-	code = process(_users[0], r1);
-	code = process(_users[0], r2);
-	code = process(_users[0], r3);
-	code = process(_users[0], req9);
-	code = process(_users[0], req10);
-	code = process(_users[0], req11);
-	code = process(_users[0], req8);
-	code = process(_users[0], r4);
-	code = process(_users[0], r5);
-	close(fd);
-	std::cout<<"\nchannels: ";
-	for (iter_channel i = _channels.begin(); i != _channels.end(); ++i)
-		std::cout<<i->getChannelName()<<" ";
-	std::cout<<"\nusers: ";
-	for (iter_user i = _users.begin(); i != _users.end(); ++i)
-		std::cout<<i->getNickName()<<" ";
-	std::cout<<std::endl;
+	timeval delay;
+	delay.tv_sec = 0;
+	delay.tv_usec = 0;
+	while (_conf.ok()) {
+		FD_ZERO(&_fdRead);
+		FD_SET(_socketFd, &_fdRead);
+		_maxFd = _socketFd;
+		for (iter_user usr = _users.begin(); usr != _users.end(); ++usr) {
+			FD_SET(usr->getSocketFd(), &_fdRead);
+			if (usr->getSocketFd() > _maxFd)
+				_maxFd = usr->getSocketFd();
+		}
+		if (select(_maxFd + 1, &_fdRead, NULL, NULL, &delay) > 0) {
+			if (FD_ISSET(_socketFd, &_fdRead))
+				newUserConnect();
+			else
+				readSocket();
+		}
+	}
 }
 
-void Server::killUser(User &user) { user.getHost(); }
+void Server::killUser(User &user) {
+
+}
+
 void Server::send(int socketFd, std::string response) {
-	write(socketFd, response.c_str(), response.size());
+
 }

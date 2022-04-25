@@ -6,9 +6,12 @@
 # include <string>
 # include <sstream>
 # include <fstream>
+# include <fcntl.h>
+# include <unistd.h>
 # include <sys/types.h>
 # include <sys/socket.h>
 # include <sys/time.h>
+# include <arpa/inet.h>
 # include "../User/User.hpp"
 # include "../Config/Config.hpp"
 # include "../Service/ParseRequest.hpp"
@@ -17,28 +20,52 @@
 class Channel;
 class User;
 
+struct PingData {
+	uint64_t lastMessageTime;
+	int socket;
+	bool responseWaiting;
+	bool restartRequest;
+	bool restartResponse;
+	bool isOnline;
+	pthread_mutex_t printMutex;
+	PingData();
+	~PingData();
+};
+
 class Server
 {
 private:
 	typedef std::vector<User>::iterator			iter_user;
 	typedef std::vector<Channel>::iterator		iter_channel;
 	typedef std::vector<std::string>::iterator	iter_str;
-    int                         _fd;
-    unsigned short int          _port;
-    unsigned long               _ipAddr;
+	unsigned short int			_port;
 	std::string					_pass;
+	fd_set						_fdRead;
+	uint64_t					_responseTimeout;
+	uint64_t					_requestTimeout;
+	int							_maxClients;
+	int							_socketFd, _newSocketFd, _maxFd;
+	std::vector<PingData>		_pingData;
 	std::vector<User>			_users;
 	std::vector<User>			_usersHistory;
 	std::vector<Channel>		_channels;
 	Config						_conf;
 public:
-    Server(unsigned short int port, std::string pass);
-    ~Server();
-    void		createConnection();
+	Server(unsigned short int port, std::string pass);
+	~Server();
 	void		start();
 	static void	send(int socketFd, std::string response);
 private:
-	void		killUser(User &user);
+	////////////////////////////////
+	//----------Server------------//
+	////////////////////////////////
+	void			newUserConnect();
+	void			readSocket();
+	void			execRequest(User &user, std::string buf);
+	std::string		accepting();
+	bool			settingUpSocket();
+	void			init(unsigned short int port, std::string pass);
+	void			killUser(User &user);
 	////////////////////////////////
 	//----------Commands----------//
 	////////////////////////////////
