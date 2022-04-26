@@ -20,24 +20,23 @@
 class Channel;
 class User;
 
-struct PingData {
-	uint64_t lastMessageTime;
-	int socket;
-	bool responseWaiting;
-	bool restartRequest;
-	bool restartResponse;
-	bool isOnline;
-	pthread_mutex_t printMutex;
-	PingData();
-	~PingData();
-};
-
 class Server
 {
 private:
 	typedef std::vector<User>::iterator			iter_user;
 	typedef std::vector<Channel>::iterator		iter_channel;
 	typedef std::vector<std::string>::iterator	iter_str;
+	struct PingData {
+		uint64_t lastMessageTime;
+		int socket;
+		bool responseWaiting;
+		bool restartRequest;
+		bool restartResponse;
+		bool isOnline;
+		pthread_mutex_t printMutex;
+		PingData();
+		~PingData();
+	};
 	unsigned short int			_port;
 	std::string					_pass;
 	fd_set						_fdRead;
@@ -65,6 +64,7 @@ private:
 	std::string		accepting();
 	bool			settingUpSocket();
 	void			init(unsigned short int port, std::string pass);
+	void			kickUserFromChannel(User &user, Channel &channel);
 	void			killUser(User &user);
 	////////////////////////////////
 	//----------Commands----------//

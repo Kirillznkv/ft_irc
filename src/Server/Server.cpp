@@ -1,9 +1,9 @@
 #include "Server.hpp"
 
-PingData::PingData() : lastMessageTime(-1), isOnline(true) {
+Server::PingData::PingData() : lastMessageTime(-1), isOnline(true) {
 	pthread_mutex_init(&(this->printMutex), NULL);
 }
-PingData::~PingData(){
+Server::PingData::~PingData(){
 	pthread_mutex_destroy(&(this->printMutex));
 }
 
@@ -24,7 +24,6 @@ void Server::init(unsigned short int port, std::string pass) {
 	_maxClients = atoi(_conf["maxConnections"].c_str());
 	if (_maxClients < 1 || _requestTimeout < 1 || _responseTimeout < 1)
 		throw "Config is not valid";
-	_pingData.reserve(_maxClients);
 	std::cout << "Server initialized" << std::endl;
 }
 
@@ -54,6 +53,10 @@ bool Server::settingUpSocket() {
 }
 
 void Server::newUserConnect() {
+	if (_users.size() == _maxClients) {
+		std::cerr<<"Error users limit"<<std::endl;
+		return ;
+	}
 	std::string port = accepting();
 	if (port.empty())
 		return ;
@@ -62,6 +65,7 @@ void Server::newUserConnect() {
 	user.setRealHost(port);
 	_pingData[user.getId()].socket = _newSocketFd;
 	_users.push_back(user);
+	_pingData.push_back(PingData());
 }
 
 void Server::execRequest(User &user, std::string buf) {
@@ -114,9 +118,6 @@ void Server::start() {
 		std::cerr<<"Error on binding to port"<<std::endl;
 		return ;
 	}
-	timeval delay;
-	delay.tv_sec = 0;
-	delay.tv_usec = 0;
 	while (_conf.ok()) {
 		FD_ZERO(&_fdRead);
 		FD_SET(_socketFd, &_fdRead);
@@ -126,7 +127,7 @@ void Server::start() {
 			if (usr->getSocketFd() > _maxFd)
 				_maxFd = usr->getSocketFd();
 		}
-		if (select(_maxFd + 1, &_fdRead, NULL, NULL, &delay) > 0) {
+		if (select(_maxFd + 1, &_fdRead, NULL, NULL, NULL) > 0) {
 			if (FD_ISSET(_socketFd, &_fdRead))
 				newUserConnect();
 			else
@@ -135,8 +136,36 @@ void Server::start() {
 	}
 }
 
-void Server::killUser(User &user) {
+void Server::kickUserFromChannel(User &user, Channel channel) {
+	channel.deleteUser(user);
+	itKickUser->getJoinedChannels().erase(it);
+	for (iter_user usr = channel.getUsers().begin(); usr != channel.getUsers().end(); ++usr)
+		Server::sendP2PMsg(user, *usr, "QUIT", "Client exited");
+	if (Utils::isUserExist(channel.getOpers(), user.getNickName()) && channel.getOpers().size() == 1) {
+		channel.deleteOperator(user);
+		if (channel.getOpers().size() == 1 && channel.getUsers().size() == 1)
+			_channels.erase(Utils::findChannel(_channels, channel.getChannelName()));
+		else if (channel.getOpers().size() == 1){
+			iter_user newOper;
+			for (newOper = channel.getUsers().begin(); newOper != channel.getUsers().end(); ++newOper)
+				if (channel.isOperator(*newOper) == false)
+					break ;
+			if (newOper == channel.getUsers().end())
+				return ;
+			channel.addOperator(*newOper);
+			Server::sendP2PMsg(user, *newOper, "MODE", channel.isChannelName(), newOper->getNickName() + " is operator now");
+		}
+	}
+}
 
+void Server::killUser(User &user) {
+	std::cout<<user.getNickName()<<" disconnected"<<std::endl;
+	_usersHistory.push_back(user);
+	for (iter_channel it = user.getJoinedChannels().begin(); it != user.getJoinedChannels().end(); ++it)
+		kickUserFromChannel(user, *it);
+	PingData[user.getId()].isOnline = false;
+	close(user.getSocketFd());
+	_users.erase(Utils::findUser(_users, user.getNickName()));
 }
 
 void Server::send(int socketFd, std::string response) {

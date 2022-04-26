@@ -218,8 +218,6 @@ unsigned int Server::chooseCommand(User &user, std::vector<std::string> &args) {
 	else if (!user.isRegistered()) { Server::sendErrorResponse(451, user); }
 	else if (args[0] == "ADMIN") { Server::adminCmd(user, args); }
 	else if (args[0] == "AWAY") { Server::awayCmd(user, args); }
-	else if (args[0] == "DIE") { Server::dieCmd(user, args); }
-	else if (args[0] == "ERROR") { Server::errorCmd(user, args); }
 	else if (args[0] == "INFO") { Server::infoCmd(user, args); }
 	else if (args[0] == "INVITE") { Server::inviteCmd(user, args); }
 	else if (args[0] == "ISON") { Server::isonCmd(user, args); }
@@ -238,7 +236,6 @@ unsigned int Server::chooseCommand(User &user, std::vector<std::string> &args) {
 	else if (args[0] == "PRIVMSG") { Server::privMsgCmd(user, args); }
 	else if (args[0] == "REHASH") { Server::rehashCmd(user); }
 	else if (args[0] == "RESTART") { return Server::restartCmd(user); }
-	else if (args[0] == "STATS") { return Server::statsCmd(user, args); }
 	else if (args[0] == "TIME") { Server::timeCmd(user, args); }
 	else if (args[0] == "TOPIC") { Server::topicCmd(user, args); }
 	else if (args[0] == "VERSION") { Server::versionCmd(user, args); }
@@ -405,35 +402,28 @@ void Server::kickCmd(User &user, std::vector<std::string> &args) {
 		Server::sendErrorResponse(401, user, chName);
 		return ;
 	}
+	iter_user itKickUser = Utils::findUser(_users, kickUserName);
+	iter_channel itKickChannel = Utils::findChannel(itKickUser->getJoinedChannels(), chName);
 	std::string comment = user.getNickName();
 	if (args.size() > 3)
 		comment = args[3];
 	for (iter_user usr = itChannel->getUsers().begin(); usr != itChannel->getUsers().end(); ++usr)
 		Server::sendP2PMsg(user, *usr, args[0], itChannel->getChannelName(), kickUserName + " :" + comment);
+	itChannel->deleteUser(*itKickUser);
+	itKickUser->getJoinedChannels().erase(itKickChannel);
 	if (Utils::isUserExist(itChannel->getOpers(), kickUserName) && itChannel->getOpers().size() == 1) {
-		if (itChannel->getUsers().size() == 1) {
-			iter_user itKickUser = Utils::findUser(_users, kickUserName);
-			iter_channel itKickChannel = Utils::findChannel(itKickUser->getJoinedChannels(), chName);
-			itKickUser->getJoinedChannels().erase(itKickChannel);
-			itKickChannel = Utils::findChannel(_channels, chName);
-			_channels.erase(itKickChannel);
-		}
-		else {
+		itChannel->deleteOperator(*itKickUser);
+		if (itChannel->getOpers().size() == 1 && itChannel->getUsers().size() == 1)
+			_channels.erase(itChannel);
+		else if (itChannel->getOpers().size() == 1){
 			iter_user newOper;
 			for (newOper = itChannel->getUsers().begin(); newOper != itChannel->getUsers().end(); ++newOper)
 				if (itChannel->isOperator(*newOper) == false)
 					break ;
+			if (newOper == itChannel->getUsers().end())
+				return ;
 			itChannel->addOperator(*newOper);
 			Server::sendP2PMsg(user, *newOper, "MODE", chName, newOper->getNickName() + " is operator now");
-			iter_user itKick = Utils::findUser(itChannel->getOpers(), kickUserName);
-			if (itKick != itChannel->getOpers().end())
-				itChannel->getOpers().erase(itKick);
-			itKick = Utils::findUser(itChannel->getUsers(), kickUserName);
-			if (itKick != itChannel->getUsers().end())
-				itChannel->getUsers().erase(itKick);
-			iter_user itKickUser = Utils::findUser(_users, kickUserName);
-			iter_channel itKickChannel = Utils::findChannel(itKickUser->getJoinedChannels(), chName);
-			itKickUser->getJoinedChannels().erase(itKickChannel);
 		}
 	}
 }
