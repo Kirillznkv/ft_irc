@@ -53,7 +53,7 @@ public:
 	Server(unsigned short int port, std::string pass);
 	~Server();
 	void		start();
-	static void	send(int socketFd, std::string response);
+	static void	sendSocket(int socketFd, std::string response);
 private:
 	////////////////////////////////
 	//----------Server------------//
@@ -63,8 +63,8 @@ private:
 	void			execRequest(User &user, std::string buf);
 	std::string		accepting();
 	bool			settingUpSocket();
-	void			init(unsigned short int port, std::string pass);
-	void			kickUserFromChannel(User &user, Channel &channel);
+	void			init();
+	void			kickUserFromChannel(User &user, iter_channel channel);
 	void			killUser(User &user);
 	////////////////////////////////
 	//----------Commands----------//

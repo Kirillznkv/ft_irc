@@ -10,13 +10,13 @@ Server::PingData::~PingData(){
 Server::Server(unsigned short int port, std::string pass) : _port(port), _pass(pass) {
 	if (_port < 1024 || _port > 49151)
 		throw "Wrong port!";
-	init(_port, _pass);
+	init();
 	std::cout << "Server will be bound to port: " << _port << std::endl;
 }
 
 Server::~Server() {}
 
-void Server::init(unsigned short int port, std::string pass) {
+void Server::init() {
 	if (_conf.ok() == false)
 		throw "Config is not valid";
 	_requestTimeout = atoi(_conf["requestTimeout"].c_str()) * 1000;
@@ -50,10 +50,11 @@ bool Server::settingUpSocket() {
 	std::cout<<"Server is listening to "<<_port<<std::endl;
 	listen(_socketFd, _maxClients);
 	fcntl(_socketFd, F_SETFL, O_NONBLOCK);
+	return true;
 }
 
 void Server::newUserConnect() {
-	if (_users.size() == _maxClients) {
+	if (_users.size() == (size_t)_maxClients) {
 		std::cerr<<"Error users limit"<<std::endl;
 		return ;
 	}
@@ -63,9 +64,9 @@ void Server::newUserConnect() {
 	fcntl(_newSocketFd, F_SETFL, O_NONBLOCK);
 	User user(_newSocketFd);
 	user.setRealHost(port);
+	_pingData.push_back(PingData());
 	_pingData[user.getId()].socket = _newSocketFd;
 	_users.push_back(user);
-	_pingData.push_back(PingData());
 }
 
 void Server::execRequest(User &user, std::string buf) {
@@ -103,7 +104,7 @@ void Server::readSocket() {
 		if (FD_ISSET(usr->getSocketFd(), &_fdRead)) {
 			char buf[512];
 			bzero(&buf, 512);
-			if (recv(_socketFd, &buf, 512, 0) < 0) {
+			if (recv(usr->getSocketFd(), &buf, 512, 0) < 0) {
 				std::cerr<<"Error reading from socket"<<std::endl;
 				killUser(*usr);
 			}
@@ -129,31 +130,31 @@ void Server::start() {
 		}
 		if (select(_maxFd + 1, &_fdRead, NULL, NULL, NULL) > 0) {
 			if (FD_ISSET(_socketFd, &_fdRead))
-				newUserConnect();
+					newUserConnect();
 			else
 				readSocket();
 		}
 	}
 }
 
-void Server::kickUserFromChannel(User &user, Channel channel) {
-	channel.deleteUser(user);
-	itKickUser->getJoinedChannels().erase(it);
-	for (iter_user usr = channel.getUsers().begin(); usr != channel.getUsers().end(); ++usr)
+void Server::kickUserFromChannel(User &user, iter_channel channel) {
+	channel->deleteUser(user);
+	user.getJoinedChannels().erase(channel);
+	for (iter_user usr = channel->getUsers().begin(); usr != channel->getUsers().end(); ++usr)
 		Server::sendP2PMsg(user, *usr, "QUIT", "Client exited");
-	if (Utils::isUserExist(channel.getOpers(), user.getNickName()) && channel.getOpers().size() == 1) {
-		channel.deleteOperator(user);
-		if (channel.getOpers().size() == 1 && channel.getUsers().size() == 1)
-			_channels.erase(Utils::findChannel(_channels, channel.getChannelName()));
-		else if (channel.getOpers().size() == 1){
+	if (Utils::isUserExist(channel->getOpers(), user.getNickName()) && channel->getOpers().size() == 1) {
+		channel->deleteOperator(user);
+		if (channel->getOpers().size() == 1 && channel->getUsers().size() == 1)
+			_channels.erase(Utils::findChannel(_channels, channel->getChannelName()));
+		else if (channel->getOpers().size() == 1){
 			iter_user newOper;
-			for (newOper = channel.getUsers().begin(); newOper != channel.getUsers().end(); ++newOper)
-				if (channel.isOperator(*newOper) == false)
+			for (newOper = channel->getUsers().begin(); newOper != channel->getUsers().end(); ++newOper)
+				if (channel->isOperator(*newOper) == false)
 					break ;
-			if (newOper == channel.getUsers().end())
+			if (newOper == channel->getUsers().end())
 				return ;
-			channel.addOperator(*newOper);
-			Server::sendP2PMsg(user, *newOper, "MODE", channel.isChannelName(), newOper->getNickName() + " is operator now");
+			channel->addOperator(*newOper);
+			Server::sendP2PMsg(user, *newOper, "MODE", channel->getChannelName(), newOper->getNickName() + " is operator now");
 		}
 	}
 }
@@ -162,12 +163,13 @@ void Server::killUser(User &user) {
 	std::cout<<user.getNickName()<<" disconnected"<<std::endl;
 	_usersHistory.push_back(user);
 	for (iter_channel it = user.getJoinedChannels().begin(); it != user.getJoinedChannels().end(); ++it)
-		kickUserFromChannel(user, *it);
-	PingData[user.getId()].isOnline = false;
+		kickUserFromChannel(user, it);
+	_pingData[user.getId()].isOnline = false;
 	close(user.getSocketFd());
 	_users.erase(Utils::findUser(_users, user.getNickName()));
 }
 
-void Server::send(int socketFd, std::string response) {
-
+void Server::sendSocket(int socketFd, std::string response) {
+	if (send(socketFd, response.c_str(), strlen(response.c_str()), 0) < 0)
+		std::cout<<"Error writing to socket"<<std::endl;
 }

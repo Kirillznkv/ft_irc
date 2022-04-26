@@ -142,7 +142,7 @@ void Channel::sendToAll(User &sender, std::string channelName, std::string msg) 
 	std::string prefix = ":" + sender.getNickName() + "!"
 			+ sender.getUserName() + "@" + sender.getRealHost() + " MODE " + channelName + " ";
 	for (iter it = _users.begin(); it != _users.end(); ++it)
-		Server::send(it->getSocketFd(), prefix + msg + "\n");
+		Server::sendSocket(it->getSocketFd(), prefix + msg + "\n");
 }
 
 bool Channel::isChannelName(std::string chName) {

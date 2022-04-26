@@ -49,7 +49,7 @@ void Server::sendErrorResponse(unsigned int code, const User &user, std::string 
 		case 502: res += " :Cant change mode for other users\n"; break;
 		default: res += "UNKNOWN ERROR\n"; break;
 	}
-	Server::send(user.getSocketFd(), res);
+	Server::sendSocket(user.getSocketFd(), res);
 }
 
 void Server::sendResponse(unsigned int code, const User &user, std::string arg1, std::string arg2, std::string arg3, \
@@ -135,7 +135,7 @@ void Server::sendResponse(unsigned int code, const User &user, std::string arg1,
 		case 259: res += ":E-Mail   " + arg1 + "\n"; break;
 		default: res += "UNKNOWN REPLY\n"; break;
 	}
-	Server::send(user.getSocketFd(), res);
+	Server::sendSocket(user.getSocketFd(), res);
 }
 
 void Server::sendP2PMsg(User &sender, User& recipient, std::string arg1, std::string arg2, std::string arg3) {
@@ -146,5 +146,5 @@ void Server::sendP2PMsg(User &sender, User& recipient, std::string arg1, std::st
 		msg += arg1 + " :" + arg2 + "\n";
 	else if (arg1 != "")
 		msg += arg1 + " " + arg2 + " :" + arg3 + "\n";
-	Server::send(recipient.getSocketFd(), msg);
+	Server::sendSocket(recipient.getSocketFd(), msg);
 }

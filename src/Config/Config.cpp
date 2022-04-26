@@ -1,11 +1,11 @@
 #include "Config.hpp"
 
-Config::Config() : _fileName("src/Config/Config.conf"), _ok(false) { initMap(); }
+Config::Config() : _fileName("/Users/kshanti/Desktop/ft_irc/src/Config/config.conf"), _ok(false) { initMap(); }
 Config::~Config() {}
 
 void Config::initMap() {
 	std::ifstream file;
-	file.open (_fileName, std::ifstream::in);
+	file.open(_fileName, std::ifstream::in);
 	if (file.is_open() == false)
 		return ;
 	std::string line;

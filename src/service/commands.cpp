@@ -143,7 +143,7 @@ void Server::killCmd(User &user, std::vector<std::string> &args) {
 	else {
 		for (iter_user it = _users.begin(); it != _users.end(); ++it) {
 			if (it->getNickName() == args[1]) {
-				Server::send(it->getSocketFd(), args[2] + "\n");
+				Server::sendSocket(it->getSocketFd(), args[2] + "\n");
 				Server::killUser(*it);
 				return;
 			}
@@ -157,7 +157,7 @@ int Server::pingCmd(User &user, std::vector<std::string> &args) {
 		Server::sendErrorResponse(409, user);
 		return 0;
 	}
-	Server::send(user.getSocketFd(), ":" + _conf["name"] + " PONG :" + args[1] + "\n");
+	Server::sendSocket(user.getSocketFd(), ":" + _conf["name"] + " PONG :" + args[1] + "\n");
 	return 8;
 }
 
@@ -327,7 +327,7 @@ void Server::inviteCmd(User &user, std::vector<std::string> &args) {
 		Server::sendErrorResponse(442, user, invChannel);
 		return ;
 	}
-	if (Utils::isUserExist(itInvChannel->getUsers(), invUser) == false) {
+	if (Utils::isUserExist(itInvChannel->getUsers(), invUser)) {
 		Server::sendErrorResponse(443, user, invUser, invChannel);
 		return ;
 	}
