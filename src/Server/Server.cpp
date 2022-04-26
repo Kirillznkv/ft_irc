@@ -130,7 +130,7 @@ void Server::start() {
 		}
 		if (select(_maxFd + 1, &_fdRead, NULL, NULL, NULL) > 0) {
 			if (FD_ISSET(_socketFd, &_fdRead))
-					newUserConnect();
+				newUserConnect();
 			else
 				readSocket();
 		}

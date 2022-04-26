@@ -474,7 +474,7 @@ void Server::namesCmd(User &user, std::vector<std::string> &args) {
 		std::string aloneUsers = "";
 		for (iter_user usr = _users.begin(); usr != _users.end(); usr++) {
 			if (usr->getJoinedChannels().empty()) {
-				if (usr->isInvisible() == false || usr->getNickName() == user.getNickName())
+				if (usr->isRegistered() && (usr->isInvisible() == false || usr->getNickName() == user.getNickName()))
 					aloneUsers += usr->getNickName() + " ";
 			}
 		}
@@ -947,7 +947,7 @@ std::vector<User> Server::strToUsers(const std::string& str, User &usrWhoAsk) {
 	std::vector<std::string> users = Utils::split(str, ',');
 	for (size_t i = 0; i < users.size(); ++i) {
 		std::string usr = users[i];
-		if (Utils::isUserExist(_users, usr) == true) {
+		if (Utils::isUserExist(_users, usr) == true && Utils::findUser(_users, usr)->isRegistered()) {
 			std::vector<User>::iterator itUsr = Utils::findUser(_users, usr);
 			if (itUsr->isInvisible() == false || usr == usrWhoAsk.getNickName())
 				res.push_back(*itUsr);
@@ -1005,13 +1005,13 @@ void Server::whoCmd(User &user, std::vector<std::string> &args) {
 		operatorFlag = true;
 	if (args.size() == 1 || (args.size() > 1 && args[1] == "0")) {
 		for (iter_user it = _users.begin(); it != _users.end(); it++) {
-			if ((it->isInvisible() == false || it->getNickName() == user.getNickName()) && (operatorFlag == false || it->isAdmin()))
+			if (it->isRegistered() && (it->isInvisible() == false || it->getNickName() == user.getNickName()) && (operatorFlag == false || it->isAdmin()))
 				Server::sendResponse(352, user, Utils::getLastChannel(*it), it->getUserName(), it->getRealHost(), it->getServerName(), it->getNickName(), std::to_string(0), it->getRealName());
 		}
 	} else {
 		std::vector<User> users = strToUsers(args[1], user);
 		for (iter_user it = users.begin(); it != users.end(); it++) {
-			if ((it->isInvisible() == false || it->getNickName() == user.getNickName()) && (operatorFlag == false || it->isAdmin()))
+			if (it->isRegistered() && (it->isInvisible() == false || it->getNickName() == user.getNickName()) && (operatorFlag == false || it->isAdmin()))
 				Server::sendResponse(352, user, Utils::getLastChannel(*it), it->getUserName(), it->getRealHost(), it->getServerName(), it->getNickName(), std::to_string(0), it->getRealName());
 		}
 		Server::sendResponse(315, user, args[1]);
