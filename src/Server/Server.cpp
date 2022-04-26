@@ -104,7 +104,7 @@ void Server::readSocket() {
 		if (FD_ISSET(usr->getSocketFd(), &_fdRead)) {
 			char buf[512];
 			bzero(&buf, 512);
-			if (recv(usr->getSocketFd(), &buf, 512, 0) < 0) {
+			if (recv(usr->getSocketFd(), &buf, 512, 0) <= 0) {
 				std::cerr<<"Error reading from socket"<<std::endl;
 				killUser(*usr);
 			}

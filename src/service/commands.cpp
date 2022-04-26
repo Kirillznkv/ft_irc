@@ -965,8 +965,7 @@ void Server::whoisCmd(User &user, std::vector<std::string> &args) {
 	}
 	std::vector<User> users = strToUsers(args[1], user);
 	for (iter_user usr = users.begin(); usr != users.end(); ++usr) {
-		// uint64_t afk = (Service::timer() - Server::rr_data[it->getId()].last_message_time) / 1000;
-		uint64_t afk = 42;
+		uint64_t afk = (Utils::timer() - Server::_pingData[usr->getId()].lastMessageTime) / 1000;
 		Server::sendResponse(311, user, usr->getNickName(), usr->getUserName(), usr->getRealHost(), usr->getRealName());
 		if (usr->isAway())
 			Server::sendResponse(301, user, usr->getNickName(), usr->getAutoReply());
