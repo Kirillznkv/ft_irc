@@ -409,13 +409,12 @@ void Server::kickCmd(User &user, std::vector<std::string> &args) {
 		comment = args[3];
 	for (iter_user usr = itChannel->getUsers().begin(); usr != itChannel->getUsers().end(); ++usr)
 		Server::sendP2PMsg(user, *usr, args[0], itChannel->getChannelName(), kickUserName + " :" + comment);
-	itChannel->deleteUser(*itKickUser);
-	itKickUser->getJoinedChannels().erase(itKickChannel);
-	if (Utils::isUserExist(itChannel->getOpers(), kickUserName) && itChannel->getOpers().size() == 1) {
-		itChannel->deleteOperator(*itKickUser);
-		if (itChannel->getOpers().size() == 1 && itChannel->getUsers().size() == 1)
+	if (Utils::isUserExist(itChannel->getOpers(), kickUserName)) {
+		if (itChannel->getOpers().size() == 1 && itChannel->getUsers().size() == 1) {
+			itKickUser->getJoinedChannels().erase(itKickChannel);
 			_channels.erase(itChannel);
-		else if (itChannel->getOpers().size() == 1){
+			return ;
+		} else if (itChannel->getOpers().size() == 1){
 			iter_user newOper;
 			for (newOper = itChannel->getUsers().begin(); newOper != itChannel->getUsers().end(); ++newOper)
 				if (itChannel->isOperator(*newOper) == false)
@@ -425,7 +424,10 @@ void Server::kickCmd(User &user, std::vector<std::string> &args) {
 			itChannel->addOperator(*newOper);
 			Server::sendP2PMsg(user, *newOper, "MODE", chName, newOper->getNickName() + " is operator now");
 		}
+		itChannel->deleteOperator(*itKickUser);
 	}
+	itChannel->deleteUser(*itKickUser);
+	itKickUser->getJoinedChannels().erase(itKickChannel);
 }
 
 void Server::listCmd(User &user, std::vector<std::string> &args) {

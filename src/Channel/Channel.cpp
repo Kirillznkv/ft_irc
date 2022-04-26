@@ -135,7 +135,6 @@ void Channel::deleteUser(User &user) {
 	iter it = Utils::findUser(_users, user.getNickName());
 	if (it != _users.end())
 		_users.erase(it);
-	deleteOperator(user);
 }
 
 void Channel::sendToAll(User &sender, std::string channelName, std::string msg) {

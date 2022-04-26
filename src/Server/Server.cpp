@@ -138,12 +138,9 @@ void Server::start() {
 }
 
 void Server::kickUserFromChannel(User &user, iter_channel channel) {
-	channel->deleteUser(user);
-	user.getJoinedChannels().erase(channel);
 	for (iter_user usr = channel->getUsers().begin(); usr != channel->getUsers().end(); ++usr)
 		Server::sendP2PMsg(user, *usr, "QUIT", "Client exited");
-	if (Utils::isUserExist(channel->getOpers(), user.getNickName()) && channel->getOpers().size() == 1) {
-		channel->deleteOperator(user);
+	if (Utils::isUserExist(channel->getOpers(), user.getNickName())) {
 		if (channel->getOpers().size() == 1 && channel->getUsers().size() == 1)
 			_channels.erase(Utils::findChannel(_channels, channel->getChannelName()));
 		else if (channel->getOpers().size() == 1){
@@ -156,7 +153,10 @@ void Server::kickUserFromChannel(User &user, iter_channel channel) {
 			channel->addOperator(*newOper);
 			Server::sendP2PMsg(user, *newOper, "MODE", channel->getChannelName(), newOper->getNickName() + " is operator now");
 		}
+		channel->deleteOperator(user);
 	}
+	channel->deleteUser(user);
+	user.getJoinedChannels().erase(channel);
 }
 
 void Server::killUser(User &user) {
