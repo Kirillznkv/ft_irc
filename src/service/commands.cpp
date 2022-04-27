@@ -1,12 +1,11 @@
 #include "../Server/Server.hpp"
 #include "../Hash/Hash.hpp"
 
-unsigned int Server::process(User &user, std::string req) {
+void Server::process(User &user, std::string req) {
 	if (ParseRequest::emptyRequest(req))
-		return 0;
+		return ;
 	std::vector<std::string> requestArgs = ParseRequest::parseRequest(req);
-	unsigned int res = Server::chooseCommand(user, requestArgs);
-	return res;
+	Server::chooseCommand(user, requestArgs);
 }
 
 void Server::passCmd(User &user, std::vector<std::string> &args) {
@@ -35,24 +34,25 @@ void Server::nickCmd(User &user, std::vector<std::string> &args) {
 	user.setNickName(args[1]);
 }
 
-int Server::userCmd(User &user, std::vector<std::string> &args) {
+void Server::userCmd(User &user, std::vector<std::string> &args) {
 	if (args.size() < 4) {
 		Server::sendErrorResponse(461, user, args[0]);
-		return 0;
+		return ;
 	}
 	if (user.getNickName() == "" || user.isValidPass() == false) {
 		killUser(user);
-		return 0;
+		return ;
 	}
 	user.setUserName(args[1]);
 	user.setHost(args[2]);
 	user.setServerName(args[3]);
 	user.setRealName(args[4]);
 	if (user.isRegistered() == true)
-		return 0;
+		return ;
 	user.setRegistered(true);
 	Server::motdCmd(user);
-	return 7;
+	_pingData[user.getId()].userNickName = user.getNickName();
+	createPingTread(user);
 }
 
 void Server::quitCmd(User &user) {
@@ -152,33 +152,38 @@ void Server::killCmd(User &user, std::vector<std::string> &args) {
 	}
 }
 
-int Server::pingCmd(User &user, std::vector<std::string> &args) {
+void Server::pingCmd(User &user, std::vector<std::string> &args) {
 	if (args.size() < 2) {
 		Server::sendErrorResponse(409, user);
-		return 0;
+		return ;
 	}
 	Server::sendSocket(user.getSocketFd(), ":" + _conf["name"] + " PONG :" + args[1] + "\n");
-	return 8;
 }
 
-int Server::pongCmd(User &user, std::vector<std::string> &args) {
+void Server::pongCmd(User &user, std::vector<std::string> &args) {
 	if (args.size() < 2) {
 		Server::sendErrorResponse(409, user);
-		return 0;
+		return ;
 	}
 	else if (args[1] != _conf["name"]) {
 		Server::sendErrorResponse(402, user, args[1]);
-		return 0;
+		return ;
 	}
-	return 8;
+	if (_pingData[user.getId()].responseWaiting) {
+		_pingData[user.getId()].restartResponse = true;
+		_pingData[user.getId()].lastMessageTime = Utils::timer();
+	}
 }
 
-int Server::restartCmd(User &user) {
+void Server::restartCmd(User &user) {
 	if (!user.isAdmin()) {
 		Server::sendErrorResponse(481, user);
-		return 0;
+		return ;
 	}
-	return 3;
+	clearAll();
+	_conf.reload();
+	init();
+	start();
 }
 
 void Server::rehashCmd(User &user) {
@@ -186,6 +191,12 @@ void Server::rehashCmd(User &user) {
 		Server::sendErrorResponse(481, user);
 	else {
 		_conf.reload();
+		init();
+		for (size_t i = 0; i < _pingData.size(); ++i) {
+			_pingData[user.getId()].serverName = _conf["name"];
+			_pingData[user.getId()].requestTimeout = _requestTimeout;
+			_pingData[user.getId()].responseTimeout = _responseTimeout;
+		}
 		Server::sendResponse(382, user);
 	}
 }
@@ -209,11 +220,11 @@ void Server::wallopsCmd(User &user, std::vector<std::string> &args) {
 	}
 }
 
-unsigned int Server::chooseCommand(User &user, std::vector<std::string> &args) {
+void Server::chooseCommand(User &user, std::vector<std::string> &args) {
 	
 	if (args[0] == "PASS") { Server::passCmd(user, args); }
 	else if (args[0] == "NICK") { Server::nickCmd(user, args); }
-	else if (args[0] == "USER") { return Server::userCmd(user, args); }
+	else if (args[0] == "USER") { Server::userCmd(user, args); }
 	else if (args[0] == "QUIT") { Server::quitCmd(user); }
 	else if (!user.isRegistered()) { Server::sendErrorResponse(451, user); }
 	else if (args[0] == "ADMIN") { Server::adminCmd(user, args); }
@@ -231,11 +242,11 @@ unsigned int Server::chooseCommand(User &user, std::vector<std::string> &args) {
 	else if (args[0] == "NOTICE") { Server::noticeCmd(user, args); }
 	else if (args[0] == "OPER") { Server::operCmd(user, args); }
 	else if (args[0] == "PART") { Server::partCmd(user, args); }
-	else if (args[0] == "PING") { return Server::pingCmd(user, args); }
-	else if (args[0] == "PONG") { return Server::pongCmd(user, args); }
+	else if (args[0] == "PING") { Server::pingCmd(user, args); }
+	else if (args[0] == "PONG") { Server::pongCmd(user, args); }
 	else if (args[0] == "PRIVMSG") { Server::privMsgCmd(user, args); }
 	else if (args[0] == "REHASH") { Server::rehashCmd(user); }
-	else if (args[0] == "RESTART") { return Server::restartCmd(user); }
+	else if (args[0] == "RESTART") { Server::restartCmd(user); }
 	else if (args[0] == "TIME") { Server::timeCmd(user, args); }
 	else if (args[0] == "TOPIC") { Server::topicCmd(user, args); }
 	else if (args[0] == "VERSION") { Server::versionCmd(user, args); }
@@ -244,7 +255,6 @@ unsigned int Server::chooseCommand(User &user, std::vector<std::string> &args) {
 	else if (args[0] == "WHOIS") { Server::whoisCmd(user, args); }
 	else if (args[0] == "WHOWAS") { Server::whoWasCmd(user, args); }
 	else Server::sendErrorResponse(421, user, args[0]);
-	return 0;
 }
 
 

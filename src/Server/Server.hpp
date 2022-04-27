@@ -22,21 +22,27 @@ class User;
 
 class Server
 {
-private:
-	typedef std::vector<User>::iterator			iter_user;
-	typedef std::vector<Channel>::iterator		iter_channel;
-	typedef std::vector<std::string>::iterator	iter_str;
+public:
 	struct PingData {
+		std::string serverName;
+		std::string userNickName;
 		uint64_t lastMessageTime;
+		uint64_t responseTimeout;
+		uint64_t requestTimeout;
 		int socket;
 		bool responseWaiting;
 		bool restartRequest;
 		bool restartResponse;
 		bool isOnline;
-		pthread_mutex_t printMutex;
+		bool disconnect;
+		// pthread_mutex_t printMutex;
 		PingData();
 		~PingData();
 	};
+private:
+	typedef std::vector<User>::iterator			iter_user;
+	typedef std::vector<Channel>::iterator		iter_channel;
+	typedef std::vector<std::string>::iterator	iter_str;
 	unsigned short int			_port;
 	std::string					_pass;
 	fd_set						_fdRead;
@@ -66,6 +72,8 @@ private:
 	void			init();
 	void			kickUserFromChannel(User &user, iter_channel channel);
 	void			killUser(User &user);
+	void			createPingTread(User &user);
+	void			clearAll();
 	////////////////////////////////
 	//----------Commands----------//
 	////////////////////////////////
@@ -86,22 +94,22 @@ private:
 	void	operCmd(User &user, std::vector<std::string> &args);// Done
 	void	partCmd(User &user, std::vector<std::string> &args);// Done
 	void	passCmd(User &user, std::vector<std::string> &args);// Done
-	int		pingCmd(User &user, std::vector<std::string> &args);// Done
-	int		pongCmd(User &user, std::vector<std::string> &args);// Done
+	void	pingCmd(User &user, std::vector<std::string> &args);// Done
+	void	pongCmd(User &user, std::vector<std::string> &args);// Done
 	void	privMsgCmd(User &user, std::vector<std::string> &args);// Done
 	void	quitCmd(User &user);// Done
 	void	rehashCmd(User &user);// Done
-	int		restartCmd(User &user);// Done
+	void	restartCmd(User &user);// Done
 	void	timeCmd(User &user, std::vector<std::string> &args);// Done
 	void	topicCmd(User &user, std::vector<std::string> &args);// Done
-	int		userCmd(User &user, std::vector<std::string> &args);// Done
+	void	userCmd(User &user, std::vector<std::string> &args);// Done
 	void	versionCmd(User &user, std::vector<std::string> &args);// Done
 	void	wallopsCmd(User &user, std::vector<std::string> &args);// Done
 	void	whoCmd(User &user, std::vector<std::string> &args);// Done
 	void	whoisCmd(User &user, std::vector<std::string> &args);// Done
 	void	whoWasCmd(User &user, std::vector<std::string> &args);// Done
-	unsigned int 	chooseCommand(User &user, std::vector<std::string> &args);
-	unsigned int	process(User &user, std::string req);
+	void			chooseCommand(User &user, std::vector<std::string> &args);
+	void			process(User &user, std::string req);
 	////////////////////////////////
 	//----------Utils-------------//
 	////////////////////////////////

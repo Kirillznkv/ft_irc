@@ -1,10 +1,10 @@
 #include "Server.hpp"
 
 Server::PingData::PingData() : lastMessageTime(-1), isOnline(true) {
-	pthread_mutex_init(&(this->printMutex), NULL);
+	// pthread_mutex_init(&(this->printMutex), NULL);
 }
 Server::PingData::~PingData(){
-	pthread_mutex_destroy(&(this->printMutex));
+	// pthread_mutex_destroy(&(this->printMutex));
 }
 
 Server::Server(unsigned short int port, std::string pass) : _port(port), _pass(pass) {
@@ -65,7 +65,11 @@ void Server::newUserConnect() {
 	User user(_newSocketFd);
 	user.setRealHost(port);
 	_pingData.push_back(PingData());
+	_pingData[user.getId()].serverName = _conf["name"];
 	_pingData[user.getId()].socket = _newSocketFd;
+	_pingData[user.getId()].requestTimeout = _requestTimeout;
+	_pingData[user.getId()].responseTimeout = _responseTimeout;
+	_pingData[user.getId()].disconnect = false;
 	_users.push_back(user);
 }
 
@@ -75,15 +79,8 @@ void Server::execRequest(User &user, std::string buf) {
 	if (user.isRegistered() && _pingData[user.getId()].responseWaiting == false)
 		_pingData[user.getId()].restartRequest = true;
 	std::vector<std::string> requests = Utils::split(buf, '\n');
-	for (iter_str it = requests.begin(); it != requests.end(); ++it) {
-		unsigned int code = process(user, *it);
-		if (code == 3)
-			;
-		else if (code == 7)
-			;
-		else if (code == 8)
-			;
-	}
+	for (iter_str it = requests.begin(); it != requests.end(); ++it)
+		process(user, *it);
 }
 
 std::string Server::accepting() {
@@ -124,6 +121,10 @@ void Server::start() {
 		FD_SET(_socketFd, &_fdRead);
 		_maxFd = _socketFd;
 		for (iter_user usr = _users.begin(); usr != _users.end(); ++usr) {
+			if (_pingData[usr->getId()].disconnect == true) {
+				killUser(*usr);
+				continue;
+			}
 			FD_SET(usr->getSocketFd(), &_fdRead);
 			if (usr->getSocketFd() > _maxFd)
 				_maxFd = usr->getSocketFd();
@@ -172,4 +173,60 @@ void Server::killUser(User &user) {
 void Server::sendSocket(int socketFd, std::string response) {
 	if (send(socketFd, response.c_str(), strlen(response.c_str()), 0) < 0)
 		std::cout<<"Error writing to socket"<<std::endl;
+}
+
+void whileNotTimeoutRequest(Server::PingData *pingData, bool *flag) {
+	while (Utils::timer() - pingData->lastMessageTime < pingData->requestTimeout) {
+		if (pingData->isOnline == false){
+			*flag = true;
+			return ;
+		}
+		if (pingData->restartRequest) {
+			pingData->restartRequest = false;
+			pingData->lastMessageTime = Utils::timer();
+		}
+	}
+}
+
+bool whileNotTimeoutResponse(Server::PingData *pingData, bool *flag) {
+	pingData->restartResponse = false;
+	pingData->responseWaiting = true;
+	uint64_t timeStartWaitResp = Utils::timer();
+	while ((Utils::timer() - timeStartWaitResp < pingData->responseTimeout) && pingData->restartResponse == false) {
+		if (pingData->isOnline == false) {
+			*flag = true;
+			return false;
+		}
+	}
+	if (pingData->restartResponse == false) {
+		*flag = true;
+		return true;
+	}
+	pingData->responseWaiting = false;
+	return false;
+}
+
+void* pingRequest(void *data) {
+	Server::PingData *pingData = (Server::PingData *)data;
+	bool flagDie = false;
+	while (flagDie == false){
+		whileNotTimeoutRequest(pingData, &flagDie);
+		Server::sendSocket(pingData->socket, ":" + pingData->serverName + " PING :" + pingData->serverName + "\n");
+		pingData->disconnect = whileNotTimeoutResponse(pingData, &flagDie);
+	}
+	return NULL;
+}
+
+void Server::createPingTread(User &user) {
+	pthread_t tread;
+	_pingData[user.getId()].lastMessageTime = Utils::timer();
+	pthread_create(&tread, NULL, &pingRequest, &_pingData[user.getId()]);
+	pthread_detach(tread);
+}
+
+void Server::clearAll() {
+	_pingData.clear();
+	_channels.clear();
+	_usersHistory.clear();
+	_users.clear();
 }
