@@ -219,7 +219,7 @@ void Server::wallopsCmd(User &user, std::vector<std::string> &args) {
 		Server::sendErrorResponse(461, user, args[0]);
 	else {
 		for (iter_user it = _users.begin(); it != _users.end(); ++it)
-			if (it->isAdmin())
+			if (it->isAdmin() || it->isWallops())
 				Server::sendP2PMsg(user, *it, args[0], args[1]);
 	}
 }
@@ -608,10 +608,10 @@ void Server::setChannelModeOperator(User &user, std::vector<std::string> &args, 
 	}
 	if (args[2][0] == '+') {
 		channel.addOperator(*itUserToOper);
-		channel.sendToAll(user, args[1], " is operator now");
+		channel.sendToAll(user, args[1], userToOperName + " is operator now");
 	} else {
 		channel.deleteOperator(*itUserToOper);
-		channel.sendToAll(user, args[1], " removed from operator list");
+		channel.sendToAll(user, args[1], userToOperName + " removed from operator list");
 	}
 }
 

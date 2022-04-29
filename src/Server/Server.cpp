@@ -158,8 +158,8 @@ void Server::kickUserFromChannel(User &user, iter_channel channel) {
 void Server::killUser(User &user) {
 	std::cout<<user.getNickName()<<" disconnected"<<std::endl;
 	_usersHistory.push_back(user);
-	for (iter_channel it = user.getJoinedChannels().begin(); it != user.getJoinedChannels().end(); ++it)
-		kickUserFromChannel(user, it);
+	while (user.getJoinedChannels().empty() == false)
+		kickUserFromChannel(user, user.getJoinedChannels().begin());
 	_pingData[user.getId()].isOnline = false;
 	close(user.getSocketFd());
 	_users.erase(Utils::findUser(_users, user.getNickName()));
