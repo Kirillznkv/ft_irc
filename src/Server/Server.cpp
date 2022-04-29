@@ -129,11 +129,13 @@ void Server::start() {
 				readSocket();
 		}
 	}
+	std::cout<<"AAAAAAAAA --> "<<_conf.ok()<<std::endl;
 }
 
 void Server::kickUserFromChannel(User &user, iter_channel channel) {
 	for (iter_user usr = channel->getUsers().begin(); usr != channel->getUsers().end(); ++usr)
-		Server::sendP2PMsg(user, *usr, "QUIT", "Client exited");
+		if (user.getNickName() != usr->getNickName())
+			Server::sendP2PMsg(user, *usr, "QUIT", "Client exited");
 	if (Utils::isUserExist(channel->getOpers(), user.getNickName())) {
 		if (channel->getOpers().size() == 1 && channel->getUsers().size() == 1)
 			_channels.erase(Utils::findChannel(_channels, channel->getChannelName()));
@@ -156,8 +158,8 @@ void Server::kickUserFromChannel(User &user, iter_channel channel) {
 void Server::killUser(User &user) {
 	std::cout<<user.getNickName()<<" disconnected"<<std::endl;
 	_usersHistory.push_back(user);
-	while (user.getJoinedChannels().empty() == false)
-		kickUserFromChannel(user, user.getJoinedChannels().begin());
+	for (iter_channel it = user.getJoinedChannels().begin(); it != user.getJoinedChannels().end();)
+		kickUserFromChannel(user, Utils::findChannel(_channels, it->getChannelName()));
 	_pingData[user.getSocketFd()].isOnline = false;
 	close(user.getSocketFd());
 	_users.erase(Utils::findUser(_users, user.getNickName()));
