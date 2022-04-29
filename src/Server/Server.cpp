@@ -1,20 +1,16 @@
 #include "Server.hpp"
 
 Server::PingData::PingData() : lastMessageTime(-1), isOnline(true) {
-	// pthread_mutex_init(&(this->printMutex), NULL);
 }
 Server::PingData::~PingData(){
-	// pthread_mutex_destroy(&(this->printMutex));
 }
 
 Server::Server(unsigned short int port, std::string pass) : _port(port), _pass(pass) {
 	if (_port < 1024 || _port > 49151)
 		throw "Wrong port!";
 	init();
-	if (settingUpSocket() == false) {
-		std::cerr<<"Error on binding to port"<<std::endl;
-		return ;
-	}
+	if (settingUpSocket() == false)
+		throw "Error on binding to port";
 	std::cout << "Server will be bound to port: " << _port << std::endl;
 }
 
@@ -26,6 +22,7 @@ void Server::init() {
 	_requestTimeout = atoi(_conf["requestTimeout"].c_str()) * 1000;
 	_responseTimeout = atoi(_conf["responseTimeout"].c_str()) * 1000;
 	_maxClients = atoi(_conf["maxConnections"].c_str());
+	_pingData.reserve(_maxClients);
 	std::cout << "Server initialized" << std::endl;
 }
 
@@ -177,6 +174,7 @@ void whileNotTimeoutRequest(Server::PingData *pingData, bool *flag) {
 	while (Utils::timer() - pingData->lastMessageTime < pingData->requestTimeout) {
 		if (pingData->isOnline == false){
 			*flag = true;
+			std::cout<<"--------> "<<pingData->userNickName<<": "<<"AAAAAAAAAAAAAAA1"<<std::endl;
 			return ;
 		}
 		if (pingData->restartRequest) {
@@ -193,11 +191,14 @@ bool whileNotTimeoutResponse(Server::PingData *pingData, bool *flag) {
 	while ((Utils::timer() - timeStartWaitResp < pingData->responseTimeout) && pingData->restartResponse == false) {
 		if (pingData->isOnline == false) {
 			*flag = true;
+			std::cout<<"--------> "<<pingData->userNickName<<": "<<"AAAAAAAAAAAAAAA2"<<std::endl;
 			return false;
 		}
 	}
+	std::cout<<"-------> "<<pingData->userNickName<<": "<<Utils::timer() - timeStartWaitResp<<" ? "<< pingData->responseTimeout<<std::endl;
 	if (pingData->restartResponse == false) {
 		*flag = true;
+			std::cout<<"--------> "<<pingData->userNickName<<": "<<"AAAAAAAAAAAAAAA3"<<std::endl;
 		return true;
 	}
 	pingData->responseWaiting = false;
@@ -209,10 +210,9 @@ void* pingRequest(void *data) {
 	bool flagDie = false;
 	while (flagDie == false){
 		whileNotTimeoutRequest(pingData, &flagDie);
-		// pthread_mutex_lock(&pingData->printMutex);
 		Server::sendSocket(pingData->socket, ":" + pingData->serverName + " PING :" + pingData->serverName + "\n");
-		// pthread_mutex_unlock(&pingData->printMutex);
-		pingData->disconnect = whileNotTimeoutResponse(pingData, &flagDie);
+		if (whileNotTimeoutResponse(pingData, &flagDie))
+			pingData->disconnect = true;
 	}
 	return NULL;
 }

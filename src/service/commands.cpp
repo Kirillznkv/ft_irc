@@ -170,8 +170,8 @@ void Server::pongCmd(User &user, std::vector<std::string> &args) {
 		return ;
 	}
 	if (_pingData[user.getId()].responseWaiting) {
-		_pingData[user.getId()].restartResponse = true;
 		_pingData[user.getId()].lastMessageTime = Utils::timer();
+		_pingData[user.getId()].restartResponse = true;
 	}
 }
 
@@ -190,7 +190,12 @@ void Server::rehashCmd(User &user) {
 		Server::sendErrorResponse(481, user);
 	else {
 		_conf.reload();
-		init();
+		try {
+			init();
+		} catch (const char *s) {
+			std::cerr<<s<<std::endl;
+			return ;
+		}
 		for (size_t i = 0; i < _pingData.size(); ++i) {
 			_pingData[user.getId()].serverName = _conf["name"];
 			_pingData[user.getId()].requestTimeout = _requestTimeout;

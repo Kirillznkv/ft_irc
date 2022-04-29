@@ -35,7 +35,6 @@ public:
 		bool restartResponse;
 		bool isOnline;
 		bool disconnect;
-		pthread_mutex_t printMutex;
 		PingData();
 		~PingData();
 	};
