@@ -48,5 +48,7 @@ std::string const Config::operator [](std::string const& name) const {
 }
 
 void Config::reload() {
+	_ok = false;
+	_map.clear();
 	initMap();
 }

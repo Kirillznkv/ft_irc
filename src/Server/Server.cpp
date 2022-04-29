@@ -11,6 +11,10 @@ Server::Server(unsigned short int port, std::string pass) : _port(port), _pass(p
 	if (_port < 1024 || _port > 49151)
 		throw "Wrong port!";
 	init();
+	if (settingUpSocket() == false) {
+		std::cerr<<"Error on binding to port"<<std::endl;
+		return ;
+	}
 	std::cout << "Server will be bound to port: " << _port << std::endl;
 }
 
@@ -74,6 +78,8 @@ void Server::newUserConnect() {
 }
 
 void Server::execRequest(User &user, std::string buf) {
+	while (buf.find("\r\n") != std::string::npos)
+		buf.replace(buf.find("\r\n"), 2, "\n");
 	if (buf.find('\n') == std::string::npos)
 		return ;
 	if (user.isRegistered() && _pingData[user.getId()].responseWaiting == false)
@@ -112,10 +118,6 @@ void Server::readSocket() {
 }
 
 void Server::start() {
-	if (settingUpSocket() == false) {
-		std::cerr<<"Error on binding to port"<<std::endl;
-		return ;
-	}
 	while (_conf.ok()) {
 		FD_ZERO(&_fdRead);
 		FD_SET(_socketFd, &_fdRead);
@@ -228,5 +230,7 @@ void Server::clearAll() {
 	_pingData.clear();
 	_channels.clear();
 	_usersHistory.clear();
+	for (size_t i = 0; i < _users.size(); ++i)
+		close(_users[i].getSocketFd());
 	_users.clear();
 }

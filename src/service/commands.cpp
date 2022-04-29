@@ -183,7 +183,6 @@ void Server::restartCmd(User &user) {
 	clearAll();
 	_conf.reload();
 	init();
-	start();
 }
 
 void Server::rehashCmd(User &user) {
