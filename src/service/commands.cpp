@@ -759,13 +759,13 @@ void Server::setChannelModeKey(User &user, std::vector<std::string> &args, Chann
 				Server::sendErrorResponse(467, user, channel.getChannelName());
 			else {
 				channel.setPassword(args[3]);
-				channel.sendToAll(user, args[1], "channel has been protected with key: " + args[3]);
+				channel.sendToAll(user, args[1], " channel has been protected with key: " + args[3]);
 			}
 		} else
 			Server::sendErrorResponse(472, user, args[2]);
 	} else {
 		channel.resetPassword();
-		channel.sendToAll(user, args[1], "channel key has been removed");
+		channel.sendToAll(user, args[1], " channel key has been removed");
 	}
 }
 
@@ -831,7 +831,7 @@ void Server::setUserModeInvisible(User &user, std::vector<std::string> &args) {
 		user.setInvisible(false);
 		response = "disabled";
 	}
-	Server::sendP2PMsg(user, user, args[0] + user.getNickName() + "invisible mode is " + response);
+	Server::sendP2PMsg(user, user, args[0] + " " + user.getNickName() + " invisible mode is " + response);
 }
 
 void Server::setUserModeNoticed(User &user, std::vector<std::string> &args) {
@@ -843,7 +843,7 @@ void Server::setUserModeNoticed(User &user, std::vector<std::string> &args) {
 		user.setNotice(false);
 		response = "disabled";
 	}
-	Server::sendP2PMsg(user, user, args[0] + user.getNickName() + "reception_notices_from_server mode is " + response);
+	Server::sendP2PMsg(user, user, args[0] + " " + user.getNickName() + " reception_notices_from_server mode is " + response);
 }
 
 void Server::setUserModeWallops(User &user, std::vector<std::string> &args) {
@@ -855,7 +855,7 @@ void Server::setUserModeWallops(User &user, std::vector<std::string> &args) {
 		user.setWallops(false);
 		response = "disabled";
 	}
-	Server::sendP2PMsg(user, user, args[0] + user.getNickName() + "reception_wallops mode is " + response);
+	Server::sendP2PMsg(user, user, args[0] + " " + user.getNickName() + " reception_wallops mode is " + response);
 }
 
 void Server::setUserModeOperator(User &user, std::vector<std::string> &args) {
@@ -863,7 +863,7 @@ void Server::setUserModeOperator(User &user, std::vector<std::string> &args) {
 		Server::sendErrorResponse(472, user, "+o");
 	else {
 		user.setAdmin(false);
-		Server::sendP2PMsg(user, user, args[0] + user.getNickName() + "operator mode is disabled");
+		Server::sendP2PMsg(user, user, args[0] + " " + user.getNickName() + " operator mode is disabled");
 	}
 }
 

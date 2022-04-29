@@ -34,6 +34,11 @@ void Config::checkInit() {
 	for (int i = 0; i < (int)need->size(); ++i)
 		if (_map.find(need[i]) == _map.end())
 			ok = false;
+	
+	if (atoi(_map["requestTimeout"].c_str()) * 1000 < 1 || \
+		atoi(_map["responseTimeout"].c_str()) * 1000 < 1 || \
+		atoi(_map["maxConnections"].c_str()) < 1)
+		ok = false;
 	_ok = ok;
 }
 

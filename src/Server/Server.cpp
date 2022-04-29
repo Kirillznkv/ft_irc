@@ -26,8 +26,6 @@ void Server::init() {
 	_requestTimeout = atoi(_conf["requestTimeout"].c_str()) * 1000;
 	_responseTimeout = atoi(_conf["responseTimeout"].c_str()) * 1000;
 	_maxClients = atoi(_conf["maxConnections"].c_str());
-	if (_maxClients < 1 || _requestTimeout < 1 || _responseTimeout < 1)
-		throw "Config is not valid";
 	std::cout << "Server initialized" << std::endl;
 }
 
@@ -111,6 +109,8 @@ void Server::readSocket() {
 				std::cerr<<"Error reading from socket"<<std::endl;
 				killUser(*usr);
 			}
+			else if (_pingData[usr->getId()].disconnect == true)
+				killUser(*usr);
 			else
 				execRequest(*usr, buf);
 			break ;
@@ -123,10 +123,6 @@ void Server::start() {
 		FD_SET(_socketFd, &_fdRead);
 		_maxFd = _socketFd;
 		for (iter_user usr = _users.begin(); usr != _users.end(); ++usr) {
-			if (_pingData[usr->getId()].disconnect == true) {
-				killUser(*usr);
-				continue;
-			}
 			FD_SET(usr->getSocketFd(), &_fdRead);
 			if (usr->getSocketFd() > _maxFd)
 				_maxFd = usr->getSocketFd();
@@ -213,7 +209,9 @@ void* pingRequest(void *data) {
 	bool flagDie = false;
 	while (flagDie == false){
 		whileNotTimeoutRequest(pingData, &flagDie);
+		// pthread_mutex_lock(&pingData->printMutex);
 		Server::sendSocket(pingData->socket, ":" + pingData->serverName + " PING :" + pingData->serverName + "\n");
+		// pthread_mutex_unlock(&pingData->printMutex);
 		pingData->disconnect = whileNotTimeoutResponse(pingData, &flagDie);
 	}
 	return NULL;

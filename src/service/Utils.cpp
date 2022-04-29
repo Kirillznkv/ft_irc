@@ -9,9 +9,9 @@ uint64_t Utils::timer() {
 std::string Utils::getDate() {
 	time_t timetoday;
 	time(&timetoday);
-	// string result = asctime(localtime(&timetoday));
-	// return result.substr(0, result.length() - 1);
-	return asctime(localtime(&timetoday)); // Может быть стоит выделить память
+	std::string res = asctime(localtime(&timetoday));
+	res.pop_back();
+	return res;
 }
 
 std::vector<std::string> Utils::split(const std::string& str, char delimeter) {
