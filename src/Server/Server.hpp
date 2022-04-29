@@ -3,6 +3,7 @@
 
 # include <iostream>
 # include <vector>
+# include <map>
 # include <string>
 # include <sstream>
 # include <fstream>
@@ -49,7 +50,7 @@ private:
 	uint64_t					_requestTimeout;
 	int							_maxClients;
 	int							_socketFd, _newSocketFd, _maxFd;
-	std::vector<PingData>		_pingData;
+	std::map<int, PingData>		_pingData;
 	std::vector<User>			_users;
 	std::vector<User>			_usersHistory;
 	std::vector<Channel>		_channels;

@@ -22,7 +22,6 @@ void Server::init() {
 	_requestTimeout = atoi(_conf["requestTimeout"].c_str()) * 1000;
 	_responseTimeout = atoi(_conf["responseTimeout"].c_str()) * 1000;
 	_maxClients = atoi(_conf["maxConnections"].c_str());
-	_pingData.reserve(_maxClients);
 	std::cout << "Server initialized" << std::endl;
 }
 
@@ -63,12 +62,11 @@ void Server::newUserConnect() {
 	fcntl(_newSocketFd, F_SETFL, O_NONBLOCK);
 	User user(_newSocketFd);
 	user.setRealHost(port);
-	_pingData.push_back(PingData());
-	_pingData[user.getId()].serverName = _conf["name"];
-	_pingData[user.getId()].socket = _newSocketFd;
-	_pingData[user.getId()].requestTimeout = _requestTimeout;
-	_pingData[user.getId()].responseTimeout = _responseTimeout;
-	_pingData[user.getId()].disconnect = false;
+	_pingData[_newSocketFd].serverName = _conf["name"];
+	_pingData[_newSocketFd].socket = _newSocketFd;
+	_pingData[_newSocketFd].requestTimeout = _requestTimeout;
+	_pingData[_newSocketFd].responseTimeout = _responseTimeout;
+	_pingData[_newSocketFd].disconnect = false;
 	_users.push_back(user);
 }
 
@@ -77,8 +75,8 @@ void Server::execRequest(User &user, std::string buf) {
 		buf.replace(buf.find("\r\n"), 2, "\n");
 	if (buf.find('\n') == std::string::npos)
 		return ;
-	if (user.isRegistered() && _pingData[user.getId()].responseWaiting == false)
-		_pingData[user.getId()].restartRequest = true;
+	if (user.isRegistered() && _pingData[user.getSocketFd()].responseWaiting == false)
+		_pingData[user.getSocketFd()].restartRequest = true;
 	std::vector<std::string> requests = Utils::split(buf, '\n');
 	for (iter_str it = requests.begin(); it != requests.end(); ++it)
 		process(user, *it);
@@ -106,7 +104,7 @@ void Server::readSocket() {
 				std::cerr<<"Error reading from socket"<<std::endl;
 				killUser(*usr);
 			}
-			else if (_pingData[usr->getId()].disconnect == true)
+			else if (_pingData[usr->getSocketFd()].disconnect == true)
 				killUser(*usr);
 			else
 				execRequest(*usr, buf);
@@ -160,7 +158,7 @@ void Server::killUser(User &user) {
 	_usersHistory.push_back(user);
 	while (user.getJoinedChannels().empty() == false)
 		kickUserFromChannel(user, user.getJoinedChannels().begin());
-	_pingData[user.getId()].isOnline = false;
+	_pingData[user.getSocketFd()].isOnline = false;
 	close(user.getSocketFd());
 	_users.erase(Utils::findUser(_users, user.getNickName()));
 }
@@ -205,18 +203,21 @@ void* pingRequest(void *data) {
 	Server::PingData *pingData = (Server::PingData *)data;
 	bool flagDie = false;
 	while (flagDie == false){
+		std::cout<<"###1"<<std::endl;
 		whileNotTimeoutRequest(pingData, &flagDie);
 		Server::sendSocket(pingData->socket, ":" + pingData->serverName + " PING :" + pingData->serverName + "\n");
+		std::cout<<"###2"<<std::endl;
 		if (whileNotTimeoutResponse(pingData, &flagDie))
 			pingData->disconnect = true;
+		std::cout<<"###3"<<std::endl;
 	}
 	return NULL;
 }
 
 void Server::createPingTread(User &user) {
 	pthread_t tread;
-	_pingData[user.getId()].lastMessageTime = Utils::timer();
-	pthread_create(&tread, NULL, &pingRequest, &_pingData[user.getId()]);
+	_pingData[user.getSocketFd()].lastMessageTime = Utils::timer();
+	pthread_create(&tread, NULL, &pingRequest, &_pingData[user.getSocketFd()]);
 	pthread_detach(tread);
 }
 

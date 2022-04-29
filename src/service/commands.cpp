@@ -35,7 +35,7 @@ void Server::nickCmd(User &user, std::vector<std::string> &args) {
 }
 
 void Server::userCmd(User &user, std::vector<std::string> &args) {
-	if (args.size() < 4) {
+	if (args.size() < 5) {
 		Server::sendErrorResponse(461, user, args[0]);
 		return ;
 	}
@@ -51,7 +51,7 @@ void Server::userCmd(User &user, std::vector<std::string> &args) {
 		return ;
 	user.setRegistered(true);
 	Server::motdCmd(user);
-	_pingData[user.getId()].userNickName = user.getNickName();
+	_pingData[user.getSocketFd()].userNickName = user.getNickName();
 	createPingTread(user);
 }
 
@@ -169,9 +169,9 @@ void Server::pongCmd(User &user, std::vector<std::string> &args) {
 		Server::sendErrorResponse(402, user, args[1]);
 		return ;
 	}
-	if (_pingData[user.getId()].responseWaiting) {
-		_pingData[user.getId()].lastMessageTime = Utils::timer();
-		_pingData[user.getId()].restartResponse = true;
+	if (_pingData[user.getSocketFd()].responseWaiting) {
+		_pingData[user.getSocketFd()].lastMessageTime = Utils::timer();
+		_pingData[user.getSocketFd()].restartResponse = true;
 	}
 }
 
@@ -197,9 +197,9 @@ void Server::rehashCmd(User &user) {
 			return ;
 		}
 		for (size_t i = 0; i < _pingData.size(); ++i) {
-			_pingData[user.getId()].serverName = _conf["name"];
-			_pingData[user.getId()].requestTimeout = _requestTimeout;
-			_pingData[user.getId()].responseTimeout = _responseTimeout;
+			_pingData[user.getSocketFd()].serverName = _conf["name"];
+			_pingData[user.getSocketFd()].requestTimeout = _requestTimeout;
+			_pingData[user.getSocketFd()].responseTimeout = _responseTimeout;
 		}
 		Server::sendResponse(382, user);
 	}
@@ -979,7 +979,7 @@ void Server::whoisCmd(User &user, std::vector<std::string> &args) {
 	}
 	std::vector<User> users = strToUsers(args[1], user);
 	for (iter_user usr = users.begin(); usr != users.end(); ++usr) {
-		uint64_t afk = (Utils::timer() - Server::_pingData[usr->getId()].lastMessageTime) / 1000;
+		uint64_t afk = (Utils::timer() - Server::_pingData[usr->getSocketFd()].lastMessageTime) / 1000;
 		Server::sendResponse(311, user, usr->getNickName(), usr->getUserName(), usr->getRealHost(), usr->getRealName());
 		if (usr->isAway())
 			Server::sendResponse(301, user, usr->getNickName(), usr->getAutoReply());
