@@ -152,13 +152,12 @@ void Server::kickUserFromChannel(User &user, iter_channel channel) {
 		channel->deleteOperator(user);
 	}
 	channel->deleteUser(user);
-	user.getJoinedChannels().erase(channel);
 }
 
 void Server::killUser(User &user) {
 	std::cout<<user.getNickName()<<" disconnected"<<std::endl;
 	_usersHistory.push_back(user);
-	for (iter_channel it = user.getJoinedChannels().begin(); it != user.getJoinedChannels().end();)
+	for (iter_channel it = user.getJoinedChannels().begin(); it != user.getJoinedChannels().end(); ++it)
 		kickUserFromChannel(user, Utils::findChannel(_channels, it->getChannelName()));
 	_pingData[user.getSocketFd()].isOnline = false;
 	close(user.getSocketFd());
@@ -205,13 +204,10 @@ void* pingRequest(void *data) {
 	Server::PingData *pingData = (Server::PingData *)data;
 	bool flagDie = false;
 	while (flagDie == false){
-		std::cout<<"###1"<<std::endl;
 		whileNotTimeoutRequest(pingData, &flagDie);
 		Server::sendSocket(pingData->socket, ":" + pingData->serverName + " PING :" + pingData->serverName + "\n");
-		std::cout<<"###2"<<std::endl;
 		if (whileNotTimeoutResponse(pingData, &flagDie))
 			pingData->disconnect = true;
-		std::cout<<"###3"<<std::endl;
 	}
 	return NULL;
 }
