@@ -129,7 +129,6 @@ void Server::start() {
 				readSocket();
 		}
 	}
-	std::cout<<"AAAAAAAAA --> "<<_conf.ok()<<std::endl;
 }
 
 void Server::kickUserFromChannel(User &user, iter_channel channel) {

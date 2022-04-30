@@ -307,9 +307,11 @@ void Server::joinCmd(User &user, std::vector<std::string> &args) {
 	}
 	std::vector<std::string> channels, passwords;
 	channels = Utils::split(args[1], ',');
-	passwords.reserve(channels.size());
+	passwords.reserve(channels.size());//
 	if (args.size() == 3)
 		passwords = Utils::split(args[2], ',');
+	while (passwords.size() < channels.size())
+		passwords.push_back("");
 	for (size_t i = 0; i < channels.size(); ++i){
 		std::string chName = channels[i], chPass = passwords[i];
 		if (Channel::isValidChannelName(chName) == false)
