@@ -1,6 +1,6 @@
 #include "Config.hpp"
 
-Config::Config() : _fileName("/Users/kshanti/Desktop/ft_irc/src/Config/config.conf"), _ok(false) { initMap(); }
+Config::Config() : _fileName("./src/Config/config.conf"), _ok(false) { initMap(); }
 Config::~Config() {}
 
 void Config::initMap() {

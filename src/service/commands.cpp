@@ -92,7 +92,7 @@ void Server::timeCmd(User &user, std::vector<std::string> &args) {
 }
 
 void Server::motdCmd(User &user) {
-	std::ifstream infile("data/motd");
+	std::ifstream infile("motd/motd");
 	if (infile) {
 			Server::sendResponse(375, user, _conf["name"]);
 		std::string line;

@@ -1,0 +1,7 @@
+PASS pass
+NICK user1
+USER a a a a
+JOIN #ch1_user1,#ch2_user1,#ch3_user1
+
+PART #ch1_user1,#ch2_user1,#ch3_user1
+NAMES
