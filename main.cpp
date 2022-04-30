@@ -14,7 +14,8 @@ int     main(int argc, char **argv) {
     	}
     }
     else {
-        std::cout << "Wrong arguments for launching\n";
+        std::cout << "Wrong arguments for launching:\n";
+        std::cout << "./ircserv <port> <password>\n";
         return (1);
     }
     return (0);
