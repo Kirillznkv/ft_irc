@@ -132,12 +132,16 @@ void Server::start() {
 }
 
 void Server::kickUserFromChannel(User &user, iter_channel channel) {
+	iter_channel servChannel = Utils::findChannel(_channels, channel->getChannelName());
 	for (iter_user usr = channel->getUsers().begin(); usr != channel->getUsers().end(); ++usr)
 		if (user.getNickName() != usr->getNickName())
 			Server::sendP2PMsg(user, *usr, "QUIT", "Client exited");
 	if (Utils::isUserExist(channel->getOpers(), user.getNickName())) {
-		if (channel->getOpers().size() == 1 && channel->getUsers().size() == 1)
-			_channels.erase(Utils::findChannel(_channels, channel->getChannelName()));
+		if (channel->getOpers().size() == 1 && channel->getUsers().size() == 1) {
+			_channels.erase(servChannel);
+			user.getJoinedChannels().erase(channel);
+			return ;
+		}
 		else if (channel->getOpers().size() == 1){
 			iter_user newOper;
 			for (newOper = channel->getUsers().begin(); newOper != channel->getUsers().end(); ++newOper)
@@ -145,19 +149,22 @@ void Server::kickUserFromChannel(User &user, iter_channel channel) {
 					break ;
 			if (newOper == channel->getUsers().end())
 				return ;
-			channel->addOperator(*newOper);
+			servChannel->addOperator(*newOper);
 			Server::sendP2PMsg(user, *newOper, "MODE", channel->getChannelName(), newOper->getNickName() + " is operator now");
 		}
-		channel->deleteOperator(user);
+		servChannel->deleteOperator(user);
 	}
-	channel->deleteUser(user);
+	servChannel->deleteUser(user);
+	user.getJoinedChannels().erase(channel);
 }
 
 void Server::killUser(User &user) {
 	std::cout<<user.getNickName()<<" disconnected"<<std::endl;
 	_usersHistory.push_back(user);
-	for (iter_channel it = user.getJoinedChannels().begin(); it != user.getJoinedChannels().end(); ++it)
-		kickUserFromChannel(user, Utils::findChannel(_channels, it->getChannelName()));
+	while (user.getJoinedChannels().empty() == false) {
+		iter_channel it = user.getJoinedChannels().begin();
+		kickUserFromChannel(user, it);
+	}
 	_pingData[user.getSocketFd()].isOnline = false;
 	close(user.getSocketFd());
 	_users.erase(Utils::findUser(_users, user.getNickName()));

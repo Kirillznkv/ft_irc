@@ -307,7 +307,7 @@ void Server::joinCmd(User &user, std::vector<std::string> &args) {
 	}
 	std::vector<std::string> channels, passwords;
 	channels = Utils::split(args[1], ',');
-	passwords.reserve(channels.size());//
+	passwords.reserve(channels.size());
 	if (args.size() == 3)
 		passwords = Utils::split(args[2], ',');
 	while (passwords.size() < channels.size())
