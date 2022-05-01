@@ -932,14 +932,14 @@ void Server::privMsgCmd(User &user, std::vector<std::string> &args) {
 		if (Channel::isChannelName(*itName) == true) {
 			if (Utils::isChannelExist(_channels, *itName) == false) {
 				Server::sendErrorResponse(401, user, *itName);
-				return ;
+				continue ;
 			}
 			iter_channel itChannel = Utils::findChannel(_channels, *itName);
 			if ((itChannel->isNotOutside() && itChannel->inChannel(user) == false) || \
 					(itChannel->isModerated() && Utils::isUserExist(itChannel->getVoices(), user.getNickName()) == false && \
 					Utils::isUserExist(itChannel->getOpers(), user.getNickName()) == false)) {
 				Server::sendErrorResponse(404, user, itChannel->getChannelName());
-				return ;
+				continue ;
 			}
 			for (iter_user usr = itChannel->getUsers().begin(); usr != itChannel->getUsers().end(); ++usr) {
 				if (usr->getNickName() != user.getNickName())

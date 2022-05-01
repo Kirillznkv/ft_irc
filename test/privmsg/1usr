@@ -1,0 +1,10 @@
+PASS pass
+NICK user1
+USER a a a a
+JOIN #ch1_user1,#ch2_user1,#ch3_user1
+
+PRIVMSG #ch1_user1,#ch2_user1,#ch3_user1 :hello, my channel, we did whis
+
+PRIVMSG #ch1_user2,#ch2_user2 :i try send to channel other user
+
+PRIVMSG user2 :hello, my friend
