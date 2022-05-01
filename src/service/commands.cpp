@@ -196,10 +196,10 @@ void Server::rehashCmd(User &user) {
 			std::cerr<<s<<std::endl;
 			return ;
 		}
-		for (size_t i = 0; i < _pingData.size(); ++i) {
-			_pingData[user.getSocketFd()].serverName = _conf["name"];
-			_pingData[user.getSocketFd()].requestTimeout = _requestTimeout;
-			_pingData[user.getSocketFd()].responseTimeout = _responseTimeout;
+		for (std::map<int, PingData>::iterator it = _pingData.begin(); it != _pingData.end(); ++it) {
+			_pingData[it->second.socket].serverName = _conf["name"];
+			_pingData[it->second.socket].requestTimeout = _requestTimeout;
+			_pingData[it->second.socket].responseTimeout = _responseTimeout;
 		}
 		Server::sendResponse(382, user);
 	}
