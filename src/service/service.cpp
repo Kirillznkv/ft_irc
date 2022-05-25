@@ -1,31 +1,7 @@
 #include "../Server/Server.hpp"
 
-uint64_t Server::timer() {
-	static struct timeval time;
-	gettimeofday(&time, NULL);
-	return ((time.tv_sec * (uint64_t)1000) + (time.tv_usec / (uint64_t)1000));
-}
-
-std::string Server::getDate() {
-	time_t timetoday;
-	time(&timetoday);
-	// string result = asctime(localtime(&timetoday));
-	// return result.substr(0, result.length() - 1);
-	return asctime(localtime(&timetoday)); // Может быть стоит выделить память
-}
-
-std::vector<std::string> Server::split(const std::string& str, char delimeter) {
-	std::vector<std::string> args;
-	std::istringstream f(str);
-	std::string s;
-	while (getline(f, s, delimeter))
-		args.push_back(s);
-	return args;
-}
-
 void Server::sendErrorResponse(unsigned int code, const User &user, std::string arg1, std::string arg2) {
-	std::string res = ":server_name " + std::to_string(code) + " " + user.getNickName();
-	// std::string res = ":" + config["server.name"] + " " + std::to_string(code) + " " + user.getNickName();
+	std::string res = ":" + _conf["name"] + " " + std::to_string(code) + " " + user.getNickName();
 	switch (code) {
 		case 401: res += " " + arg1 + " :No such nick/channel\n"; break;
 		case 402: res += " " + arg1 + " :No such server\n"; break;
@@ -73,13 +49,12 @@ void Server::sendErrorResponse(unsigned int code, const User &user, std::string 
 		case 502: res += " :Cant change mode for other users\n"; break;
 		default: res += "UNKNOWN ERROR\n"; break;
 	}
-	// Server::writing(user.getSocketFd(), res);
+	Server::sendSocket(user.getSocketFd(), res);
 }
 
 void Server::sendResponse(unsigned int code, const User &user, std::string arg1, std::string arg2, std::string arg3, \
 									std::string arg4, std::string arg5, std::string arg6, std::string arg7) {
-	// std::string res = ":" + config["server.name"] + " " + std::to_string(code) + " " + user.getNickName() + " ";
-	std::string res = ":server_name " + std::to_string(code) + " " + user.getNickName() + " ";
+	std::string res = ":" + _conf["name"] + " " + std::to_string(code) + " " + user.getNickName() + " ";
 	switch (code) {
 		case 302: res += ":" + arg1 + "\n"; break;
 		case 303: res += ":" + arg1 + "\n"; break;
@@ -104,7 +79,7 @@ void Server::sendResponse(unsigned int code, const User &user, std::string arg1,
 		case 342: res += arg1 + " :Summoning user to IRC\n"; break;
 		case 351: res += arg1 + "." + arg2 + " " + arg3 + " :" + arg4 + "\n"; break;
 		case 352: res += arg1 + " " + arg2 + " " + arg3 + " " + arg4 + " ";
-				  res += arg5 + " H :" + arg6 + " " + arg7 + "\n"; break;///////////////////////////////////H
+				  res += arg5 + " H :" + arg6 + " " + arg7 + "\n"; break;
 		case 315: res += arg1 + " :End of /WHO list\n"; break;
 		case 353: res += arg1 + " :" + arg2 + "\n"; break;
 		case 366: res += arg1 + " :End of /NAMES list\n"; break;
@@ -121,7 +96,7 @@ void Server::sendResponse(unsigned int code, const User &user, std::string arg1,
 		case 382: res += arg1 + " :Rehashing\n"; break;
 		case 391: res += arg1 + " :" + arg2 + "\n"; break;
 		case 392: res += ":UserID   Terminal  Host\n"; break;
-		case 393: res += ":%-8s %-9s %-8s\n"; break;//???????????????????????????????????????????????????????????
+		case 393: res += ":%-8s %-9s %-8s\n"; break;
 		case 394: res += ":End of users\n"; break;
 		case 395: res += ":Nobody logged in\n"; break;
 		case 200: res += "Link " + arg1 + " " + arg2 + " " + arg3 + "\n"; break;
@@ -131,11 +106,11 @@ void Server::sendResponse(unsigned int code, const User &user, std::string arg1,
 		case 204: res += "Oper " + arg1 + " " + arg2 + "\n"; break;
 		case 205: res += "User " + arg1 + " " + arg2 + "\n"; break;
 		case 206: res += "Serv " + arg1 + " " + arg2 + "S " + arg3 + "C ";
-				  res += arg4 + " " + arg5 + "@H\n"; break;//////////////////////////////////H
+				  res += arg4 + " " + arg5 + "@H\n"; break;
 		case 208: res += arg1 + " 0 " + arg2 + "\n"; break;
 		case 261: res += "File " + arg1 + " " + arg2 + "\n"; break;
 		case 211: res += arg1 + " " + arg2 + " " + arg3 + " " + arg4 + " ";
-				  res += arg5 + " H " + arg6 + "\n"; break;///////////////////////////////////H
+				  res += arg5 + " H " + arg6 + "\n"; break;
 		case 212: res += arg1 + " " + arg2 + "\n"; break;
 		case 213: res += "C " + arg1 + " * " + arg2 + " " + arg3 + " " + arg4 + "\n"; break;
 		case 214: res += "N " + arg1 + " * " + arg2 + " " + arg3 + " " + arg4 + "\n"; break;
@@ -144,7 +119,7 @@ void Server::sendResponse(unsigned int code, const User &user, std::string arg1,
 		case 218: res += "Y " + arg1 + " * " + arg2 + " " + arg3 + " " + arg4 + "\n"; break;
 		case 219: res += arg1 + " :End of /STATS report\n"; break;
 		case 241: res += "L " + arg1 + " * " + arg2 + " " + arg3 + "\n"; break;
-		case 242: res += ":Server Up %d days %d:%02d:%02d\n"; break;//??????????????????????????????????????????????????
+		case 242: res += ":Server Up %d days %d:%02d:%02d\n"; break;
 		case 243: res += "O " + arg1 + " * " + arg2 + "\n"; break;
 		case 244: res += "H " + arg1 + " * " + arg2 + "\n"; break;
 		case 221: res += arg1 + "\n"; break;
@@ -160,5 +135,16 @@ void Server::sendResponse(unsigned int code, const User &user, std::string arg1,
 		case 259: res += ":E-Mail   " + arg1 + "\n"; break;
 		default: res += "UNKNOWN REPLY\n"; break;
 	}
-	// Server::writing(user.getSocketFd(), res);
+	Server::sendSocket(user.getSocketFd(), res);
+}
+
+void Server::sendP2PMsg(User &sender, User& recipient, std::string arg1, std::string arg2, std::string arg3) {
+	std::string msg = ":" + sender.getNickName() + "!" + sender.getUserName() + "@" + sender.getRealHost() + " ";
+	if (arg1 != "" && arg2 == "")
+		msg += arg1 + "\n";
+	else if (arg1 != "" && arg3 == "")
+		msg += arg1 + " :" + arg2 + "\n";
+	else if (arg1 != "")
+		msg += arg1 + " " + arg2 + " :" + arg3 + "\n";
+	Server::sendSocket(recipient.getSocketFd(), msg);
 }

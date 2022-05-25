@@ -1,6 +1,6 @@
 #include "ParseRequest.hpp"
 
-bool ParseRequest::emptyRequest(std::string req) { return req == "\n"; }
+bool ParseRequest::emptyRequest(std::string req) { return req == ""; }
 
 std::vector<std::string> ParseRequest::strToWordsVector(std::string str) {
 	std::vector<std::string> target;
@@ -15,6 +15,8 @@ std::vector<std::string> ParseRequest::strToWordsVector(std::string str) {
 
 std::string ParseRequest::getPrefix(std::vector<std::string> &args) {
 	std::string prefix;
+	if (args.empty())
+		return "";
 	if (args.front()[0] == ':') {
 		args.front().erase(0, 1);
 		prefix = args.front();

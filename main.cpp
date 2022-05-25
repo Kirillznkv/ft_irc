@@ -3,11 +3,15 @@
 
 
 int     main(int argc, char **argv) {
-	if (argv)
-		;
     if (argc == 3) {
-		Server serv(6667, "pass");
-		serv.start();
+    	try {
+			std::string argv2(argv[2]);
+			Server serv(atoi(argv[1]), argv2);
+			serv.start();
+		} catch (const char *s) {
+    		std::cerr<<s<<std::endl;
+    		return (1);
+    	}
     }
     else {
         std::cout << "Wrong arguments for launching\n";

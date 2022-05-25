@@ -1,0 +1,6 @@
+PASS pass
+NICK user2
+USER b b b b
+JOIN #ch1_user2,#ch2_user2,#ch3_user2
+JOIN #ch1_user1,#ch2_user1,#ch3_user1
+NAMES
